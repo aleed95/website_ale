@@ -1,0 +1,81 @@
+---
+/**
+ * Page shown to visitors while COMING_SOON=true on Netlify (see
+ * netlify/edge-functions/coming-soon.ts). Standalone: no menu, not indexed.
+ */
+import '@/styles/global.css';
+import { Font } from 'astro:assets';
+import Logo from '@/assets/brand/logo-completo-verde.svg';
+import { getSiteSettings } from '@/lib/sanity/fetch';
+import { siteFallback } from '@/lib/site';
+
+const settings = await getSiteSettings('it');
+const siteName = settings?.siteName || siteFallback.name;
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{siteName} · Sito in costruzione</title>
+    <Font cssVariable="--font-geologica" preload />
+    <Font cssVariable="--font-fraunces" preload={[{ style: 'normal' }]} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#fff3d6" />
+  </head>
+  <body>
+    <main class="coming-soon">
+      <h1 class="visually-hidden">{siteName}</h1>
+      <Logo class="logo" role="img" aria-label={siteName} />
+      <p class="message">Sito in <em>costruzione</em></p>
+      <p class="message-en" lang="en">Website under construction</p>
+      {settings?.email && <p class="contact"><a href={`mailto:${settings.email}`}>{settings.email}</a></p>}
+    </main>
+  </body>
+</html>
+
+<style>
+  body {
+    background-color: var(--color-bg-alt);
+  }
+
+  .coming-soon {
+    display: grid;
+    flex: 1;
+    place-content: center;
+    justify-items: center;
+    gap: var(--space-m);
+    padding: var(--space-2xl) var(--gutter);
+    text-align: center;
+  }
+
+  /* Main vertical logo; minimum on-screen width 240px (brand manual p.04). */
+  .logo {
+    width: clamp(240px, 50vw, 26rem);
+    height: auto;
+    margin-bottom: var(--space-l);
+  }
+
+  .message {
+    font-family: var(--font-heading);
+    font-size: var(--text-3xl);
+    line-height: var(--leading-tight);
+    color: var(--color-heading);
+  }
+
+  .message em {
+    color: var(--color-heading-alt);
+  }
+
+  .message-en {
+    font-size: var(--text-lg);
+    font-weight: var(--weight-light);
+  }
+
+  .contact {
+    margin-top: var(--space-m);
+  }
+</style>

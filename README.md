@@ -10,10 +10,9 @@ Bilingual (Italian default, English under `/en/`), statically generated, content
 | Content | Sanity Content Lake (dataset `production`) | Sanity |
 | Source / CI | GitHub → Netlify automatic deploys | GitHub, Netlify |
 
-> **Project status — Phase 3 (visual implementation).** All pages are designed on the brand
-> manual, responsive and checked for accessibility (axe: 0 violations; WCAG AA contrast).
-> Netlify configuration (`netlify.toml`, form notifications, build hook) arrives in Phase 4;
-> the steps below already describe it.
+> **Project status — Phase 4 (deployment).** Netlify configuration, security headers,
+> under-construction mode and deployment guide are in place. Step-by-step instructions for
+> going online: **[DEPLOYMENT.md](DEPLOYMENT.md)**.
 
 ---
 
@@ -148,6 +147,8 @@ cp studio/.env.example studio/.env
 | `SANITY_STUDIO_PROJECT_ID` | studio | no | Same project ID |
 | `SANITY_STUDIO_DATASET` | studio | no | Same dataset |
 | `SANITY_STUDIO_HOSTNAME` | studio | no | Studio hostname → `https://<hostname>.sanity.studio` |
+| `COMING_SOON` | Netlify | no | `true` shows "Sito in costruzione" to visitors (see DEPLOYMENT.md) |
+| `PREVIEW_SECRET` | Netlify | **yes** | Secret link `?anteprima=<secret>` to see the real site while under construction |
 
 **Datasets per mode.** `astro dev` and `sanity dev` also load `.env.development`, which
 switches local development to the `development` dataset (sample content). Builds and the
@@ -255,34 +256,14 @@ npm exec --workspace studio -- sanity schema validate
 
 ---
 
-## Netlify deployment
+## Deployment
 
-> `netlify.toml` is added in Phase 4. Until then these are the target settings.
+Everything about Netlify, the Sanity webhook, the Studio deploy, the under-construction
+mode, form notifications and the launch checklist is in **[DEPLOYMENT.md](DEPLOYMENT.md)**.
 
-1. Netlify → **Add new site → Import an existing project → GitHub** → pick this repository.
-2. Build settings (will be pinned in `netlify.toml`):
-   - Base directory: *(repository root)*
-   - Build command: `npm run build`
-   - Publish directory: `web/dist`
-   - Environment: `NODE_VERSION=24`
-3. **Site configuration → Environment variables:** add `SANITY_PROJECT_ID`,
-   `SANITY_DATASET`, `SANITY_API_VERSION`, `SITE_URL` (and `SANITY_API_READ_TOKEN` only if
-   the dataset is private — mark it as secret).
-4. Production branch: `main`. Every push to `main` triggers a deploy; pull requests get
-   deploy previews.
-
-## Rebuild on publish (Sanity → Netlify webhook)
-
-1. Netlify → **Site configuration → Build & deploy → Build hooks → Add build hook**.
-   Name it `Sanity publish`, branch `main`. Copy the URL.
-   Treat this URL as a secret: anyone who has it can trigger builds.
-2. Sanity → <https://www.sanity.io/manage> → project → **API → Webhooks → Create webhook**:
-   - URL: the Netlify build hook URL
-   - Dataset: `production`
-   - Trigger on: Create, Update, Delete
-   - Filter: leave empty (drafts never trigger webhooks; only published changes do)
-   - HTTP method: `POST`, no projection, API version `v2025-02-19` or later
-3. Publish a test change and watch the deploy start in Netlify → **Deploys**.
+Security: Astro emits a Content Security Policy `<meta>` with hashes for its scripts and
+styles (`security.csp` in `astro.config.mjs`); `netlify.toml` adds `frame-ancestors`,
+HSTS, `nosniff`, referrer and permissions policies, and long-term caching for `/_astro/*`.
 
 ## Contact form
 

@@ -1,7 +1,7 @@
 {
   "name": "naturalist-website",
   "private": true,
-  "description": "Professional website for an independent naturalist \u2014 Astro (static) + Sanity CMS, hosted on Netlify.",
+  "description": "Professional website for an independent naturalist — Astro (static) + Sanity CMS, hosted on Netlify.",
   "workspaces": [
     "web",
     "studio"
@@ -17,5 +17,8 @@
     "check": "npm run check --workspace web && npm run typecheck --workspace studio",
     "deploy:studio": "npm run deploy --workspace studio",
     "typegen": "npm run typegen --workspace studio"
+  },
+  "devDependencies": {
+    "@netlify/edge-functions": "^4.0.4"
   }
 }

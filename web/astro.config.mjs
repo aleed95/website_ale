@@ -12,6 +12,29 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
 
+  // Content Security Policy as a <meta> tag: Astro adds hashes for its own scripts and
+  // styles; everything else is restricted to this site and the Sanity image CDN.
+  security: {
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' https://cdn.sanity.io data:",
+        "font-src 'self'",
+        "connect-src 'self'",
+        "form-action 'self'",
+        "base-uri 'self'",
+        "object-src 'none'",
+      ],
+      styleDirective: {
+        resources: [
+          "'self'",
+          // Blurred image placeholders are set through the style attribute only.
+          { resource: "'unsafe-inline'", kind: 'attribute' },
+        ],
+      },
+    },
+  },
+
   i18n: {
     locales: ['it', 'en'],
     defaultLocale: 'it',
