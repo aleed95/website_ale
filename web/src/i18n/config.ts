@@ -52,6 +52,11 @@ export function getRouteAlternates(key: RouteKey): Record<Locale, string> {
   return { ...routes[key] };
 }
 
+/** Page shown after the contact form is sent (Netlify Forms redirects here). */
+export function getContactThanksPath(locale: Locale): string {
+  return locale === 'it' ? '/contatti/grazie/' : '/en/contact/thank-you/';
+}
+
 /** Path of a detail page (project, article…) inside a section. */
 export function getDetailPath(key: 'projects' | 'articles' | 'services', locale: Locale, slug: string): string {
   return `${routes[key][locale]}${encodeURIComponent(slug)}/`;

@@ -11,6 +11,8 @@ import type { NAVIGATION_QUERY_RESULT, SECTION_PAGES_QUERY_RESULT, SITE_SETTINGS
 export { sanityClient };
 
 function memoByLocale<T>(load: (language: Locale) => Promise<T>): (language: Locale) => Promise<T> {
+  // Only during a build: in `astro dev` every request must see the latest content.
+  if (import.meta.env.DEV) return load;
   const cache = new Map<Locale, Promise<T>>();
   return (language) => {
     let pending = cache.get(language);

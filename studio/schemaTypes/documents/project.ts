@@ -1,5 +1,6 @@
 import { ImagesIcon } from '@sanity/icons/Images';
 import { defineArrayMember, defineField, defineType } from 'sanity';
+import { emphasisHint } from '../../lib/text';
 import { groups, languageField, sameLanguageFilter, slugField } from './_fields';
 
 export const project = defineType({
@@ -15,6 +16,7 @@ export const project = defineType({
       title: 'Titolo',
       type: 'string',
       group: 'content',
+      description: emphasisHint,
       validation: (rule) => rule.required(),
     }),
     slugField(),

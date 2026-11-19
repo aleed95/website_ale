@@ -251,3 +251,40 @@ a:hover {
   font-size: var(--text-sm);
   color: var(--color-heading-alt);
 }
+
+/* "See all →" style link. */
+.arrow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 0.1em;
+}
+
+.arrow-link::after {
+  content: '→';
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.arrow-link:hover::after {
+  transform: translateX(3px);
+}
+
+/* Image zoom on card hover — subtle, and disabled with reduced motion. */
+.card .media {
+  overflow: hidden;
+  border-radius: var(--radius-s);
+}
+
+.card .media img {
+  border-radius: 0;
+  transition: transform 400ms var(--ease-out);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card:hover .media img {
+    transform: scale(1.03);
+  }
+}

@@ -1,0 +1,12 @@
+---
+/** Renders a CMS title, turning *word* into <em>word</em>. */
+import { emphasisParts } from '@/lib/emphasis';
+
+interface Props {
+  text: string | null | undefined;
+}
+
+const parts = emphasisParts(Astro.props.text);
+---
+
+{parts.map((part) => (part.em ? <em>{part.text}</em> : part.text))}

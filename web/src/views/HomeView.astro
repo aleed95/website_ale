@@ -2,10 +2,13 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Container from '@/components/ui/Container.astro';
 import Button from '@/components/ui/Button.astro';
+import Emphasis from '@/components/ui/Emphasis.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
 import SanityImage from '@/components/content/SanityImage.astro';
 import ProjectCard from '@/components/content/ProjectCard.astro';
 import ArticleCard from '@/components/content/ArticleCard.astro';
 import PublicationItem from '@/components/content/PublicationItem.astro';
+import Pictogram from '@/assets/brand/pittogramma-verde-arancio.svg';
 import { getRouteAlternates, getRoutePath, type Locale } from '@/i18n/config';
 import { t } from '@/i18n/ui';
 import { buildSeo } from '@/lib/seo';
@@ -34,6 +37,8 @@ const seo = buildSeo({
 });
 const featuredProjects = (page?.featuredProjects ?? []).filter((p) => p !== null);
 const featuredPublications = (page?.featuredPublications ?? []).filter((p) => p !== null);
+const contactLabel = page?.ctaLabel || strings.nav.contact;
+const servicesPath = getRoutePath('services', locale);
 ---
 
 <BaseLayout
@@ -45,68 +50,98 @@ const featuredPublications = (page?.featuredPublications ?? []).filter((p) => p 
   locale={locale}
   alternates={getRouteAlternates('home')}
 >
+  {/* ── Hero: text + large photograph ─────────────────────────────── */}
   <section class="hero" aria-labelledby="hero-title">
-    {
-      page?.heroImage?.asset ? (
-        <SanityImage image={page.heroImage} sizes="100vw" aspectRatio={16 / 9} priority class="hero-image" />
-      ) : (
-        <div class="hero-image hero-placeholder" aria-hidden="true" />
-      )
-    }
-    <Container class="hero-content">
+    <div class="hero-media">
+      {
+        page?.heroImage?.asset ? (
+          <SanityImage
+            image={page.heroImage}
+            sizes="(min-width: 60rem) 58vw, 100vw"
+            widths={[640, 960, 1280, 1600, 2000, 2400]}
+            priority
+          />
+        ) : (
+          <div class="hero-placeholder" aria-hidden="true" />
+        )
+      }
+    </div>
+    <div class="hero-text">
       {page?.heroEyebrow && <p class="eyebrow">{page.heroEyebrow}</p>}
-      <h1 id="hero-title">{page?.heroTitle || siteName}</h1>
+      <h1 id="hero-title"><Emphasis text={page?.heroTitle || siteName} /></h1>
       {page?.heroText && <p class="lead">{page.heroText}</p>}
-    </Container>
+      <div class="hero-actions">
+        <Button href={getRoutePath('contact', locale)}>{contactLabel}</Button>
+        {services.length > 0 && (
+          <Button href={servicesPath} variant="secondary">
+            {strings.home.allServices}
+          </Button>
+        )}
+      </div>
+    </div>
   </section>
 
+  {/* ── Short introduction ────────────────────────────────────────── */}
   {
     (page?.introTitle || page?.introText) && (
       <section class="section" aria-labelledby="intro-title">
         <Container class="intro">
-          <h2 id="intro-title">{page?.introTitle || strings.nav.about}</h2>
-          {page?.introText && <p class="lead">{page.introText}</p>}
           <div>
-            <Button href={getRoutePath('about', locale)} variant="secondary">
-              {strings.common.readMore}
-            </Button>
+            <p class="eyebrow">{strings.nav.about}</p>
+            <h2 id="intro-title">
+              <Emphasis text={page?.introTitle || strings.nav.about} />
+            </h2>
+          </div>
+          <div class="intro-text">
+            {page?.introText && <p class="lead">{page.introText}</p>}
+            <p>
+              <a href={getRoutePath('about', locale)} class="arrow-link">
+                {strings.common.readMore}
+              </a>
+            </p>
           </div>
         </Container>
       </section>
     )
   }
 
+  {/* ── Services overview ─────────────────────────────────────────── */}
   {
     services.length > 0 && (
       <section class="section section--alt" aria-labelledby="services-title">
         <Container>
-          <div class="section-heading">
-            <h2 id="services-title">{strings.home.services}</h2>
-            <a href={getRoutePath('services', locale)}>{strings.home.allServices}</a>
-          </div>
-          <ul role="list" class="card-grid">
-            {services.map((service) => (
-              <li class="card">
+          <SectionHeading id="services-title" title={strings.home.services} href={servicesPath} linkLabel={strings.home.allServices} />
+          <ol role="list" class="services">
+            {services.map((service, index) => (
+              <li class="card service">
+                <span class="service-number" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
                 <h3 class="title">
-                  <a href={`${getRoutePath('services', locale)}#${service.slug}`}>{service.title}</a>
+                  <a href={`${servicesPath}#${service.slug}`}>
+                    <Emphasis text={service.title} />
+                  </a>
                 </h3>
                 <p>{service.summary}</p>
               </li>
             ))}
-          </ul>
+          </ol>
         </Container>
       </section>
     )
   }
 
+  {/* ── Selected projects ─────────────────────────────────────────── */}
   {
     featuredProjects.length > 0 && (
       <section class="section" aria-labelledby="projects-title">
         <Container>
-          <div class="section-heading">
-            <h2 id="projects-title">{strings.home.selectedProjects}</h2>
-            <a href={getRoutePath('projects', locale)}>{strings.home.allProjects}</a>
-          </div>
+          <SectionHeading
+            id="projects-title"
+            title={strings.home.selectedProjects}
+            href={getRoutePath('projects', locale)}
+            linkLabel={strings.home.allProjects}
+          />
           <ul role="list" class="card-grid">
             {featuredProjects.map((project) => (
               <li>
@@ -119,14 +154,17 @@ const featuredPublications = (page?.featuredPublications ?? []).filter((p) => p 
     )
   }
 
+  {/* ── Latest articles ───────────────────────────────────────────── */}
   {
     latestArticles.length > 0 && (
       <section class="section section--alt" aria-labelledby="articles-title">
         <Container>
-          <div class="section-heading">
-            <h2 id="articles-title">{strings.home.latestArticles}</h2>
-            <a href={getRoutePath('articles', locale)}>{strings.home.allArticles}</a>
-          </div>
+          <SectionHeading
+            id="articles-title"
+            title={strings.home.latestArticles}
+            href={getRoutePath('articles', locale)}
+            linkLabel={strings.home.allArticles}
+          />
           <ul role="list" class="card-grid">
             {latestArticles.map((article) => (
               <li>
@@ -139,30 +177,43 @@ const featuredPublications = (page?.featuredPublications ?? []).filter((p) => p 
     )
   }
 
+  {/* ── Selected publications ─────────────────────────────────────── */}
   {
     featuredPublications.length > 0 && (
       <section class="section" aria-labelledby="publications-title">
         <Container>
-          <div class="section-heading">
-            <h2 id="publications-title">{strings.home.selectedPublications}</h2>
-            <a href={getRoutePath('publications', locale)}>{strings.home.allPublications}</a>
+          <SectionHeading
+            id="publications-title"
+            title={strings.home.selectedPublications}
+            href={getRoutePath('publications', locale)}
+            linkLabel={strings.home.allPublications}
+          />
+          <div class="publications">
+            {featuredPublications.map((publication) => (
+              <PublicationItem publication={publication} locale={locale} />
+            ))}
           </div>
-          {featuredPublications.map((publication) => (
-            <PublicationItem publication={publication} locale={locale} />
-          ))}
         </Container>
       </section>
     )
   }
 
+  {/* ── Contact call to action ────────────────────────────────────── */}
   {
     page?.ctaTitle && (
-      <section class="section cta" aria-labelledby="cta-title">
-        <Container class="cta-inner">
-          <h2 id="cta-title">{page.ctaTitle}</h2>
-          {page.ctaText && <p class="lead">{page.ctaText}</p>}
-          <div>
-            <Button href={getRoutePath('contact', locale)}>{page.ctaLabel || strings.nav.contact}</Button>
+      <section class="section" aria-labelledby="cta-title">
+        <Container>
+          <div class="cta">
+            <div class="cta-text">
+              <h2 id="cta-title">
+                <Emphasis text={page.ctaTitle} />
+              </h2>
+              {page.ctaText && <p class="lead">{page.ctaText}</p>}
+              <div>
+                <Button href={getRoutePath('contact', locale)}>{contactLabel}</Button>
+              </div>
+            </div>
+            <Pictogram class="cta-pictogram" aria-hidden="true" focusable="false" />
           </div>
         </Container>
       </section>
@@ -171,37 +222,139 @@ const featuredPublications = (page?.featuredPublications ?? []).filter((p) => p 
 </BaseLayout>
 
 <style>
+  /* Hero ------------------------------------------------------------------ */
   .hero {
     display: grid;
   }
 
-  .hero :global(.hero-image) {
-    max-height: 75vh;
+  .hero-media :global(img),
+  .hero-placeholder {
+    width: 100%;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
   }
 
   .hero-placeholder {
-    aspect-ratio: 21 / 9;
     background: linear-gradient(135deg, var(--color-surface-sage), var(--color-surface-sky));
   }
 
-  .hero :global(.hero-content),
-  .section :global(.intro),
-  .cta :global(.cta-inner) {
+  .hero-text {
+    display: grid;
+    gap: var(--space-m);
+    align-content: center;
+    padding: var(--space-xl) var(--gutter) var(--space-2xl);
+  }
+
+  .hero-text h1 {
+    max-width: 14ch;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    margin-top: var(--space-2xs);
+  }
+
+  @media (min-width: 60rem) {
+    .hero {
+      grid-template-columns: 5fr 7fr;
+      min-height: min(calc(100svh - var(--header-height)), 52rem);
+    }
+
+    .hero-media {
+      order: 2;
+    }
+
+    .hero-media :global(img),
+    .hero-placeholder {
+      height: 100%;
+      aspect-ratio: auto;
+    }
+
+    /* Align the text with the page container on wide screens. */
+    .hero-text {
+      padding-block: var(--space-2xl);
+      padding-left: max(var(--gutter), calc((100vw - var(--container-max)) / 2));
+      padding-right: var(--space-xl);
+    }
+  }
+
+  /* Intro ----------------------------------------------------------------- */
+  .section :global(.intro) {
+    display: grid;
+    gap: var(--space-m) var(--space-2xl);
+  }
+
+  @media (min-width: 60rem) {
+    .section :global(.intro) {
+      grid-template-columns: 2fr 3fr;
+      align-items: start;
+    }
+  }
+
+  .intro-text {
     display: grid;
     gap: var(--space-m);
   }
 
-  .hero :global(.hero-content) {
-    padding-block: var(--space-2xl);
+  .section :global(.intro) h2 {
+    margin-top: var(--space-2xs);
   }
 
+  /* Services -------------------------------------------------------------- */
+  .services {
+    display: grid;
+    gap: var(--space-l);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  }
+
+  .service {
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--color-border);
+  }
+
+  /* Large numerals in Fraunces (brand manual p.10); Burnt Caramel is allowed for large type. */
+  .service-number {
+    font-family: var(--font-heading);
+    font-size: var(--text-3xl);
+    line-height: 1;
+    color: var(--color-accent);
+  }
+
+  /* Publications ---------------------------------------------------------- */
+  .publications {
+    max-width: 52rem;
+  }
+
+  /* Call to action -------------------------------------------------------- */
   .cta {
-    background-color: var(--color-bg-primary);
+    position: relative;
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+    overflow: hidden;
+    padding: var(--space-xl) var(--space-l);
+    background-color: var(--color-bg-alt);
+    border-radius: var(--radius-m);
   }
 
-  .cta h2,
-  .cta p {
-    color: var(--color-text-inverse);
+  @media (min-width: 48rem) {
+    .cta {
+      grid-template-columns: 1fr auto;
+      padding: var(--space-2xl) var(--space-xl);
+    }
+  }
+
+  .cta-text {
+    display: grid;
+    gap: var(--space-m);
+    max-width: 40rem;
+  }
+
+  .cta-pictogram {
+    width: clamp(6rem, 18vw, 12rem);
+    height: auto;
+    justify-self: end;
   }
 </style>

@@ -1,5 +1,6 @@
 import { HomeIcon } from '@sanity/icons/Home';
 import { defineField, defineType } from 'sanity';
+import { emphasisHint } from '../../lib/text';
 
 /**
  * Home page. One document per language with fixed IDs (homePage-it, homePage-en).
@@ -37,6 +38,7 @@ export const homePage = defineType({
       title: 'Titolo',
       type: 'string',
       group: 'hero',
+      description: emphasisHint,
       validation: (rule) => rule.required().max(90),
     }),
     defineField({
@@ -52,6 +54,7 @@ export const homePage = defineType({
       title: 'Presentazione — titolo',
       type: 'string',
       group: 'sections',
+      description: emphasisHint,
     }),
     defineField({
       name: 'introText',
@@ -94,7 +97,7 @@ export const homePage = defineType({
       title: 'Invito al contatto — titolo',
       type: 'string',
       group: 'sections',
-      description: 'Es.: "Hai un progetto in mente?"',
+      description: `Es.: "Hai un progetto *in mente*?". ${emphasisHint}`,
     }),
     defineField({
       name: 'ctaText',

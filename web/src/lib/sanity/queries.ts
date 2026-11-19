@@ -117,6 +117,11 @@ export const SITE_SETTINGS_QUERY = defineQuery(`
     phone,
     "address": select($language == "en" => address.en, address.it),
     vatNumber,
+    "privacyPageSlug": select(
+      privacyPage->language == $language => privacyPage->slug.current,
+      *[_type == "translation.metadata" && references(^.privacyPage._ref)][0]
+        .translations[language == $language][0].value->slug.current
+    ),
     socialLinks[]{ _key, platform, label, url },
     "defaultSeoDescription": select($language == "en" => defaultSeoDescription.en, defaultSeoDescription.it),
     defaultShareImage { asset->{ _id, url, metadata { dimensions { width, height } } } }
@@ -137,7 +142,8 @@ export const SECTION_PAGES_QUERY = defineQuery(`
     projects ${sectionIntroFields},
     publications ${sectionIntroFields},
     articles ${sectionIntroFields},
-    contact ${sectionIntroFields}
+    contact ${sectionIntroFields},
+    contactForm { formTitle, thanksTitle, thanksText }
   }
 `);
 

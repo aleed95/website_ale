@@ -21,6 +21,32 @@ export const sectionPages = defineType({
     }),
     defineField({ name: 'articles', title: 'Articoli', type: 'sectionIntro', validation: (rule) => rule.required() }),
     defineField({ name: 'contact', title: 'Contatti', type: 'sectionIntro', validation: (rule) => rule.required() }),
+    defineField({
+      name: 'contactForm',
+      title: 'Modulo di contatto',
+      type: 'object',
+      options: { collapsible: true, collapsed: false },
+      fields: [
+        defineField({
+          name: 'formTitle',
+          title: 'Titolo sopra il modulo',
+          type: 'string',
+          description: 'Es.: "Scrivimi".',
+        }),
+        defineField({
+          name: 'thanksTitle',
+          title: 'Pagina di conferma — titolo',
+          type: 'string',
+          description: 'Mostrata dopo l’invio. Es.: "Grazie, messaggio ricevuto".',
+        }),
+        defineField({
+          name: 'thanksText',
+          title: 'Pagina di conferma — testo',
+          type: 'text',
+          rows: 3,
+        }),
+      ],
+    }),
   ],
   preview: {
     select: { id: '_id' },

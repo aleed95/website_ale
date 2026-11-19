@@ -1,5 +1,6 @@
 import { UserIcon } from '@sanity/icons/User';
 import { defineField, defineType } from 'sanity';
+import { emphasisHint } from '../../lib/text';
 
 /** "Chi sono / About" page. One document per language (biography-it, biography-en). */
 export const biography = defineType({
@@ -19,6 +20,7 @@ export const biography = defineType({
       title: 'Titolo della pagina',
       type: 'string',
       group: 'intro',
+      description: emphasisHint,
       validation: (rule) => rule.required(),
     }),
     defineField({

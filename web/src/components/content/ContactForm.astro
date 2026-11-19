@@ -1,0 +1,193 @@
+---
+/**
+ * Contact form, handled by Netlify Forms (configured in phase 4):
+ * - `data-netlify` makes Netlify detect the form at deploy time and store submissions;
+ *   email notifications are set in the Netlify UI, so the recipient is not in the code.
+ * - spam protection: hidden honeypot field + Netlify's built-in spam filter.
+ * - no JavaScript: native validation, then Netlify redirects to the thank-you page.
+ *
+ * Both language versions post to the same form name; the hidden `language` field tells
+ * them apart in the submissions list.
+ */
+import Button from '@/components/ui/Button.astro';
+import { getContactThanksPath, type Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+  title?: string | null | undefined;
+  privacyHref?: string | undefined;
+}
+
+const { locale, title, privacyHref } = Astro.props;
+const s = t(locale).contact;
+---
+
+<form
+  class="contact-form"
+  name="contact"
+  method="POST"
+  action={getContactThanksPath(locale)}
+  data-netlify="true"
+  netlify-honeypot="company"
+  aria-labelledby="contact-form-title"
+>
+  <h2 id="contact-form-title">{title || s.formTitle}</h2>
+  <p class="hint">{s.required}</p>
+
+  <input type="hidden" name="form-name" value="contact" />
+  <input type="hidden" name="language" value={locale} />
+
+  <div class="honeypot" aria-hidden="true">
+    <label>
+      {s.honeypot}
+      <input type="text" name="company" tabindex="-1" autocomplete="off" />
+    </label>
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label for="contact-name">{s.name}</label>
+      <input id="contact-name" name="name" type="text" autocomplete="name" required maxlength="120" />
+    </div>
+    <div class="field">
+      <label for="contact-email">{s.emailField}</label>
+      <input id="contact-email" name="email" type="email" autocomplete="email" required maxlength="160" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="contact-subject">{s.subject}</label>
+    <input id="contact-subject" name="subject" type="text" required maxlength="160" />
+  </div>
+
+  <div class="field">
+    <label for="contact-message">{s.message}</label>
+    <textarea id="contact-message" name="message" rows="7" required maxlength="5000"></textarea>
+  </div>
+
+  <div class="consent">
+    <input id="contact-consent" name="privacy-consent" type="checkbox" value="yes" required />
+    <label for="contact-consent">
+      {
+        privacyHref ? (
+          <>
+            {s.consentBefore}
+            <a href={privacyHref} target="_blank" rel="noopener">
+              {s.consentLink}
+              <span class="visually-hidden"> {t(locale).a11y.opensInNewTab}</span>
+            </a>
+            {s.consentAfter}
+          </>
+        ) : (
+          s.consentNoLink
+        )
+      }
+    </label>
+  </div>
+
+  <div>
+    <Button>{s.submit}</Button>
+  </div>
+</form>
+
+<style>
+  .contact-form {
+    display: grid;
+    gap: var(--space-m);
+    padding: var(--space-l);
+    background-color: var(--color-bg-alt);
+    border-radius: var(--radius-m);
+  }
+
+  @media (min-width: 48rem) {
+    .contact-form {
+      padding: var(--space-xl);
+    }
+  }
+
+  h2 {
+    font-size: var(--text-2xl);
+  }
+
+  .hint {
+    margin-top: calc(-1 * var(--space-xs));
+    font-size: var(--text-sm);
+  }
+
+  .row {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  @media (min-width: 40rem) {
+    .row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .field {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  label {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+  }
+
+  input[type='text'],
+  input[type='email'],
+  textarea {
+    width: 100%;
+    min-height: 3rem;
+    padding: var(--space-xs) var(--space-s);
+    border: 1px solid color-mix(in srgb, var(--color-heading-alt) 70%, transparent);
+    border-radius: var(--radius-s);
+    background-color: var(--color-bg);
+    font-size: var(--text-base);
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 1px;
+  }
+
+  /* Only flag invalid fields after the user has interacted with them. */
+  input:user-invalid,
+  textarea:user-invalid {
+    border-color: var(--color-accent);
+    border-width: 2px;
+  }
+
+  .consent {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-xs);
+    align-items: start;
+  }
+
+  .consent input {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.15rem;
+    accent-color: var(--color-heading-alt);
+  }
+
+  .consent label {
+    font-weight: var(--weight-regular);
+  }
+
+  .honeypot {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+</style>

@@ -62,6 +62,16 @@ export const siteSettings = defineType({
       description: 'Facoltativa. Per i professionisti va indicata nel sito.',
     }),
     defineField({
+      name: 'privacyPage',
+      title: 'Pagina della privacy policy',
+      type: 'reference',
+      to: [{ type: 'page' }],
+      group: 'contact',
+      options: { filter: 'language == "it"' },
+      description:
+        'Collegata alla casella di consenso del modulo di contatto. Scegli la versione italiana: il sito userà da solo la traduzione inglese.',
+    }),
+    defineField({
       name: 'socialLinks',
       title: 'Profili social',
       type: 'array',

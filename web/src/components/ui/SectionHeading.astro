@@ -1,0 +1,18 @@
+---
+/** Heading of a home-page section with an optional "see all" link on the right. */
+import Emphasis from './Emphasis.astro';
+
+interface Props {
+  id: string;
+  title: string;
+  href?: string | undefined;
+  linkLabel?: string | undefined;
+}
+
+const { id, title, href, linkLabel } = Astro.props;
+---
+
+<div class="section-heading">
+  <h2 id={id}><Emphasis text={title} /></h2>
+  {href && linkLabel && <a href={href} class="arrow-link">{linkLabel}</a>}
+</div>

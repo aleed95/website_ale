@@ -69,6 +69,7 @@ add({
     { _key: key(), _type: 'socialLink', platform: 'linkedin', url: 'https://example.com/linkedin' },
   ],
   defaultSeoDescription: { it: '[Esempio] Descrizione predefinita del sito.', en: '[Sample] Default site description.' },
+  privacyPage: ref('page-privacy-it'),
 });
 
 add({
@@ -113,6 +114,11 @@ for (const [lang, L] of [
     ...Object.fromEntries(
       Object.entries(L).map(([k, title]) => [k, { _type: 'sectionIntro', title, intro: lorem[lang].slice(0, 90) }]),
     ),
+    contactForm: {
+      formTitle: lang === 'it' ? 'Scrivimi [esempio]' : 'Write to me [sample]',
+      thanksTitle: lang === 'it' ? 'Grazie, *messaggio ricevuto* [esempio]' : 'Thank you, *message received* [sample]',
+      thanksText: lorem[lang],
+    },
   });
 }
 
@@ -148,7 +154,7 @@ for (const s of services) {
 // ─── Projects ────────────────────────────────────────────────────────────────
 
 const projects = [
-  { id: 'wetland', it: 'Monitoraggio di una zona umida [esempio]', en: 'Wetland monitoring [sample]', start: '2024-03-01', end: null, cover: 'project-wetland', cat: 'category-habitat', service: 'monitoring', gallery: true },
+  { id: 'wetland', it: 'Monitoraggio di una *zona umida* [esempio]', en: 'Wetland monitoring [sample]', start: '2024-03-01', end: null, cover: 'project-wetland', cat: 'category-habitat', service: 'monitoring', gallery: true },
   { id: 'dunes', it: 'Laboratorio sulle dune [esempio]', en: 'Dune workshop [sample]', start: '2023-05-01', end: '2023-09-30', cover: 'project-dunes', cat: 'category-fauna', service: 'education' },
 ];
 for (const p of projects) {
@@ -257,13 +263,13 @@ for (const lang of ['it', 'en']) {
     _type: 'homePage',
     heroImage: image('hero', it ? 'Immagine di esempio' : 'Sample image'),
     heroEyebrow: it ? 'Naturalista' : 'Naturalist',
-    heroTitle: it ? 'Titolo di esempio per la home' : 'Sample home page title',
+    heroTitle: it ? 'Titolo di esempio *per la home*' : 'Sample *home page* title',
     heroText: lorem[lang],
-    introTitle: it ? 'Presentazione di esempio' : 'Sample introduction',
+    introTitle: it ? 'Presentazione *di esempio*' : 'Sample *introduction*',
     introText: lorem[lang],
     featuredProjects: projects.map((p) => ({ _key: key(), ...ref(`project-${p.id}-${lang}`) })),
     featuredPublications: publications.slice(0, 2).map((p) => ({ _key: key(), ...ref(`publication-${p.id}`) })),
-    ctaTitle: it ? 'Hai un progetto in mente? [esempio]' : 'Have a project in mind? [sample]',
+    ctaTitle: it ? 'Hai un progetto *in mente*? [esempio]' : 'Have a project *in mind*? [sample]',
     ctaText: lorem[lang].slice(0, 80),
     ctaLabel: it ? 'Scrivimi' : 'Write to me',
   });
@@ -271,7 +277,7 @@ for (const lang of ['it', 'en']) {
   add({
     _id: `biography-${lang}`,
     _type: 'biography',
-    title: it ? 'Chi sono' : 'About me',
+    title: it ? 'Chi *sono*' : 'About *me*',
     introduction: lorem[lang],
     profileImage: image('portrait', it ? 'Ritratto di esempio' : 'Sample portrait'),
     body: [block(lorem[lang]), block(lorem[lang])],

@@ -1,0 +1,43 @@
+---
+/** Confirmation page after the contact form (Netlify Forms redirects here). Not indexed. */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/ui/Container.astro';
+import Emphasis from '@/components/ui/Emphasis.astro';
+import Button from '@/components/ui/Button.astro';
+import { getContactThanksPath, getRoutePath, locales, type Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import { stripEmphasis } from '@/lib/emphasis';
+import { getSectionPages } from '@/lib/sanity/fetch';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale).contact;
+const form = (await getSectionPages(locale))?.contactForm;
+const title = form?.thanksTitle || strings.thanksTitle;
+const alternates = Object.fromEntries(locales.map((l) => [l, getContactThanksPath(l)]));
+---
+
+<BaseLayout title={stripEmphasis(title)} locale={locale} alternates={alternates} noindex>
+  <Container width="text" class="thanks">
+    <img src="/favicon.svg" alt="" width="72" height="54" />
+    <h1><Emphasis text={title} /></h1>
+    <p class="lead">{form?.thanksText || strings.thanksText}</p>
+    <div><Button href={getRoutePath('home', locale)} variant="secondary">{strings.backHome}</Button></div>
+  </Container>
+</BaseLayout>
+
+<style>
+  :global(.thanks) {
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+    padding-block: var(--space-3xl);
+  }
+
+  :global(.thanks) h1 {
+    font-size: var(--text-3xl);
+  }
+</style>

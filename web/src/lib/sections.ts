@@ -3,7 +3,7 @@ import { t } from '@/i18n/ui';
 import { getSectionPages, getSiteSettings } from './sanity/fetch';
 import { buildSeo, type PageSeo } from './seo';
 
-type SectionKey = 'services' | 'projects' | 'publications' | 'articles' | 'contact';
+export type SectionKey = 'services' | 'projects' | 'publications' | 'articles' | 'contact';
 
 /** Heading, intro and SEO of a listing page, from "Testi delle sezioni" with UI fallbacks. */
 export async function getSectionMeta(

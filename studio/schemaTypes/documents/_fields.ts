@@ -1,4 +1,5 @@
 import { defineField, type ReferenceFilterResolver } from 'sanity';
+import { slugify } from '../../lib/text';
 import { isUniqueSlugPerLanguage } from '../../lib/validation';
 
 /** Language of a translated document. Written by the translation plugin; not editable. */
@@ -17,7 +18,7 @@ export function slugField(source = 'title') {
     title: 'Indirizzo della pagina (slug)',
     type: 'slug',
     description: 'La parte finale dell’indirizzo web. Premi "Generate" per crearlo dal titolo.',
-    options: { source, maxLength: 96, isUnique: isUniqueSlugPerLanguage },
+    options: { source, maxLength: 96, slugify, isUnique: isUniqueSlugPerLanguage },
     validation: (rule) => rule.required(),
   });
 }

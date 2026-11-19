@@ -53,7 +53,7 @@ const timelines = [
     bio && (
       <Container class="about-intro">
         <p class="lead">{bio.introduction}</p>
-        <Figure image={bio.profileImage} sizes="(min-width: 60rem) 40vw, 100vw" priority class="portrait" />
+        <Figure image={bio.profileImage} aspectRatio={4 / 5} sizes="(min-width: 60rem) 40vw, 100vw" priority class="portrait" />
       </Container>
     )
   }
@@ -93,7 +93,7 @@ const timelines = [
             {bio.skills.map((group) => (
               <div>
                 <h3>{group.title}</h3>
-                <ul>
+                <ul role="list" class="chips">
                   {(group.items ?? []).map((skill) => (
                     <li>{skill}</li>
                   ))}
@@ -136,6 +136,7 @@ const timelines = [
   @media (min-width: 60rem) {
     :global(.about-intro) {
       grid-template-columns: 3fr 2fr;
+      gap: var(--space-2xl);
     }
   }
 
@@ -148,15 +149,30 @@ const timelines = [
     font-size: var(--text-2xl);
   }
 
+  /* Timeline: vertical guide line with a Burnt Caramel marker per entry. */
   .timeline {
     display: grid;
     gap: var(--space-l);
-    padding: 0;
+    max-width: 52rem;
+    border-left: 1px solid var(--color-border);
   }
 
   .timeline li {
+    position: relative;
     display: grid;
     gap: var(--space-2xs) var(--space-l);
+    padding-left: var(--space-l);
+  }
+
+  .timeline li::before {
+    content: '';
+    position: absolute;
+    top: 0.55em;
+    left: -5px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background-color: var(--color-accent);
   }
 
   @media (min-width: 48rem) {
@@ -181,9 +197,23 @@ const timelines = [
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
   }
 
-  .skills ul,
   .qualifications {
     padding-left: 1.1em;
+  }
+
+  /* Dry Sage chips with Charcoal Brown text (6.3:1, manual p.08). */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+
+  .chips li {
+    padding: var(--space-3xs) var(--space-s);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-surface-sage);
+    color: var(--palette-charcoal-brown);
+    font-size: var(--text-sm);
   }
 
   .skills h3 {

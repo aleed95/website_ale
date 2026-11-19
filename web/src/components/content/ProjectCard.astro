@@ -4,6 +4,7 @@ import { t } from '@/i18n/ui';
 import { formatPeriod } from '@/lib/format';
 import { projectPath } from '@/lib/links';
 import type { PROJECTS_QUERY_RESULT } from '@/lib/sanity/sanity.types';
+import Emphasis from '@/components/ui/Emphasis.astro';
 import SanityImage from './SanityImage.astro';
 
 interface Props {
@@ -17,10 +18,10 @@ const href = projectPath(locale, project.slug ?? '');
 ---
 
 <article class="card">
-  <SanityImage image={project.coverImage} aspectRatio={4 / 3} sizes="(min-width: 60rem) 33vw, (min-width: 40rem) 50vw, 100vw" alt="" />
+  <div class="media"><SanityImage image={project.coverImage} aspectRatio={4 / 3} sizes="(min-width: 60rem) 33vw, (min-width: 40rem) 50vw, 100vw" alt="" /></div>
   <div class="body">
     {project.category?.title && <p class="eyebrow">{project.category.title}</p>}
-    <Heading class="title"><a href={href}>{project.title}</a></Heading>
+    <Heading class="title"><a href={href}><Emphasis text={project.title} /></a></Heading>
     {project.startDate && (
       <p class="meta">{formatPeriod(project.startDate, project.endDate, locale, t(locale).common.ongoing)}</p>
     )}

@@ -2,10 +2,12 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Container from '@/components/ui/Container.astro';
 import PageHeader from '@/components/ui/PageHeader.astro';
+import ContactForm from '@/components/content/ContactForm.astro';
 import { getRouteAlternates, type Locale } from '@/i18n/config';
 import { t } from '@/i18n/ui';
+import { getPagePath } from '@/lib/links';
 import { getSectionMeta } from '@/lib/sections';
-import { getSiteSettings } from '@/lib/sanity/fetch';
+import { getSectionPages, getSiteSettings } from '@/lib/sanity/fetch';
 import { socialLabel } from '@/lib/social';
 
 interface Props {
@@ -14,8 +16,13 @@ interface Props {
 
 const { locale } = Astro.props;
 const strings = t(locale);
-const [meta, settings] = await Promise.all([getSectionMeta('contact', locale), getSiteSettings(locale)]);
+const [meta, settings, sections] = await Promise.all([
+  getSectionMeta('contact', locale),
+  getSiteSettings(locale),
+  getSectionPages(locale),
+]);
 const socialLinks = (settings?.socialLinks ?? []).filter((link) => link.url);
+const privacyHref = settings?.privacyPageSlug ? getPagePath(locale, settings.privacyPageSlug) : undefined;
 ---
 
 <BaseLayout
@@ -28,7 +35,7 @@ const socialLinks = (settings?.socialLinks ?? []).filter((link) => link.url);
 >
   <PageHeader title={meta.title} intro={meta.intro} />
 
-  <Container class="contact">
+  <Container class="contact-layout">
     <dl class="details">
       {
         settings?.email && (
@@ -59,7 +66,7 @@ const socialLinks = (settings?.socialLinks ?? []).filter((link) => link.url);
           <div>
             <dt>{strings.contact.social}</dt>
             <dd>
-              <ul role="list">
+              <ul role="list" class="social">
                 {socialLinks.map((link) => (
                   <li>
                     <a href={link.url} rel="noopener me">{socialLabel(link)}</a>
@@ -71,13 +78,24 @@ const socialLinks = (settings?.socialLinks ?? []).filter((link) => link.url);
         )
       }
     </dl>
-    {/* Contact form: Phase 3 (markup) and Phase 4 (Netlify Forms). */}
+
+    <ContactForm locale={locale} title={sections?.contactForm?.formTitle} privacyHref={privacyHref} />
   </Container>
 </BaseLayout>
 
 <style>
-  :global(.contact) {
-    padding-bottom: var(--space-2xl);
+  :global(.contact-layout) {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: start;
+    padding-bottom: var(--space-3xl);
+  }
+
+  @media (min-width: 60rem) {
+    :global(.contact-layout) {
+      grid-template-columns: 1fr 2fr;
+      gap: var(--space-2xl);
+    }
   }
 
   .details {
@@ -96,15 +114,15 @@ const socialLinks = (settings?.socialLinks ?? []).filter((link) => link.url);
   dd {
     margin: var(--space-3xs) 0 0;
     font-size: var(--text-lg);
+    overflow-wrap: anywhere;
   }
 
   .address {
     white-space: pre-line;
   }
 
-  dd ul {
+  .social {
     display: grid;
     gap: var(--space-3xs);
-    padding: 0;
   }
 </style>

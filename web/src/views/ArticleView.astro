@@ -3,6 +3,8 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Container from '@/components/ui/Container.astro';
 import Figure from '@/components/content/Figure.astro';
 import RichText from '@/components/content/RichText.astro';
+import SanityImage from '@/components/content/SanityImage.astro';
+import Emphasis from '@/components/ui/Emphasis.astro';
 import { getRoutePath, type Locale } from '@/i18n/config';
 import { t } from '@/i18n/ui';
 import { formatDate } from '@/lib/format';
@@ -49,7 +51,7 @@ const tags = article.tags ?? [];
     <Container width="text" class="article-header">
       <p class="back"><a href={getRoutePath('articles', locale)}>← {strings.nav.articles}</a></p>
       {categories.length > 0 && <p class="eyebrow">{categories.join(' · ')}</p>}
-      <h1>{article.title}</h1>
+      <h1><Emphasis text={article.title} /></h1>
       <p class="meta">
         {article.publishedAt && <time datetime={article.publishedAt}>{formatDate(article.publishedAt, locale)}</time>}
         {article.author?.name && <span> · {strings.articles.by} {article.author.name}</span>}
@@ -63,6 +65,19 @@ const tags = article.tags ?? [];
 
     <Container width="text" class="article-body">
       <RichText value={article.body} />
+      {
+        article.author?.name && (
+          <aside class="author" aria-label={strings.articles.author}>
+            {article.author.image?.asset && (
+              <SanityImage image={article.author.image} aspectRatio={1} widths={[160, 320]} sizes="5rem" alt="" class="author-image" />
+            )}
+            <div>
+              <p class="author-name">{article.author.name}</p>
+              {article.author.bio && <p class="author-bio">{article.author.bio}</p>}
+            </div>
+          </aside>
+        )
+      }
       {
         tags.length > 0 && (
           <div class="tags">
@@ -98,6 +113,29 @@ const tags = article.tags ?? [];
     display: grid;
     gap: var(--space-xl);
     padding-block: var(--space-xl) var(--space-2xl);
+  }
+
+  .author {
+    display: flex;
+    gap: var(--space-m);
+    align-items: start;
+    padding-top: var(--space-l);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .author :global(.author-image) {
+    flex: none;
+    width: 5rem;
+    border-radius: 50%;
+  }
+
+  .author-name {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+  }
+
+  .author-bio {
+    font-size: var(--text-sm);
   }
 
   .tags ul {

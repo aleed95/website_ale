@@ -51,8 +51,8 @@ const relatedServices = (project.relatedServices ?? []).filter((s) => s !== null
   locale={locale}
   alternates={alternates}
 >
-  <PageHeader title={project.title ?? ''} intro={project.summary}>
-    <p class="back"><a href={getRoutePath('projects', locale)}>← {strings.nav.projects}</a></p>
+  <PageHeader title={project.title ?? ''} intro={project.summary} eyebrow={project.category?.title}>
+    <p slot="before" class="back"><a href={getRoutePath('projects', locale)}>← {strings.nav.projects}</a></p>
   </PageHeader>
 
   <Container>
@@ -110,7 +110,6 @@ const relatedServices = (project.relatedServices ?? []).filter((s) => s !== null
 
 <style>
   .back {
-    order: -1;
     font-size: var(--text-sm);
   }
 
@@ -130,6 +129,16 @@ const relatedServices = (project.relatedServices ?? []).filter((s) => s !== null
   .facts {
     display: grid;
     gap: var(--space-s);
+    padding: var(--space-m);
+    background-color: var(--color-bg-alt);
+    border-radius: var(--radius-m);
+  }
+
+  @media (min-width: 60rem) {
+    .facts {
+      position: sticky;
+      top: calc(var(--header-height) + var(--space-m));
+    }
   }
 
   dt {

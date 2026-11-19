@@ -6,6 +6,7 @@ import EmptyState from '@/components/ui/EmptyState.astro';
 import Button from '@/components/ui/Button.astro';
 import SanityImage from '@/components/content/SanityImage.astro';
 import RichText from '@/components/content/RichText.astro';
+import Emphasis from '@/components/ui/Emphasis.astro';
 import { getRouteAlternates, getRoutePath, type Locale } from '@/i18n/config';
 import { t } from '@/i18n/ui';
 import { projectPath } from '@/lib/links';
@@ -38,13 +39,14 @@ const [meta, services] = await Promise.all([
   <Container class="services">
     {services.length === 0 && <EmptyState locale={locale} />}
     {
-      services.map((service) => (
+      services.map((service, index) => (
         <section id={service.slug ?? undefined} class="service" aria-labelledby={`service-${service.slug}`}>
           {service.image?.asset && (
             <SanityImage image={service.image} aspectRatio={4 / 3} sizes="(min-width: 60rem) 40vw, 100vw" />
           )}
           <div class="service-body">
-            <h2 id={`service-${service.slug}`}>{service.title}</h2>
+            <p class="service-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</p>
+            <h2 id={`service-${service.slug}`}><Emphasis text={service.title} /></h2>
             <p class="lead">{service.summary}</p>
             <RichText value={service.description} />
             {service.relatedProjects.length > 0 && (
@@ -87,10 +89,27 @@ const [meta, services] = await Promise.all([
   @media (min-width: 60rem) {
     .service:has(img) {
       grid-template-columns: 2fr 3fr;
+      gap: var(--space-2xl);
+    }
+
+    /* Alternate image left / right. */
+    .service:nth-child(even):has(img) {
+      grid-template-columns: 3fr 2fr;
+    }
+
+    .service:nth-child(even) :global(img) {
+      order: 2;
     }
   }
 
-  .service img {
+  .service-number {
+    font-family: var(--font-heading);
+    font-size: var(--text-3xl);
+    line-height: 1;
+    color: var(--color-accent);
+  }
+
+  .service :global(img) {
     border-radius: var(--radius-s);
   }
 

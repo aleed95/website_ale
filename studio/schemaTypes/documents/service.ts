@@ -1,5 +1,6 @@
 import { CaseIcon } from '@sanity/icons/Case';
 import { defineField, defineType } from 'sanity';
+import { emphasisHint } from '../../lib/text';
 import { groups, languageField, slugField } from './_fields';
 
 export const service = defineType({
@@ -15,6 +16,7 @@ export const service = defineType({
       title: 'Titolo',
       type: 'string',
       group: 'content',
+      description: emphasisHint,
       validation: (rule) => rule.required(),
     }),
     slugField(),

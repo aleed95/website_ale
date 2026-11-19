@@ -1,5 +1,6 @@
 import { DocumentTextIcon } from '@sanity/icons/DocumentText';
 import { defineArrayMember, defineField, defineType } from 'sanity';
+import { emphasisHint } from '../../lib/text';
 import { seoLimits } from '../../lib/validation';
 import { groups, languageField, slugField } from './_fields';
 
@@ -16,6 +17,7 @@ export const article = defineType({
       title: 'Titolo',
       type: 'string',
       group: 'content',
+      description: emphasisHint,
       validation: (rule) => rule.required(),
     }),
     slugField(),

@@ -1,19 +1,22 @@
 ---
-/** Title block at the top of a page: optional eyebrow, h1 and intro. */
+/** Title block at the top of a page: optional eyebrow, h1 (with *emphasis*) and intro. */
 import Container from './Container.astro';
+import Emphasis from './Emphasis.astro';
 
 interface Props {
   title: string;
   eyebrow?: string | null | undefined;
   intro?: string | null | undefined;
+  width?: 'default' | 'text';
 }
 
-const { title, eyebrow, intro } = Astro.props;
+const { title, eyebrow, intro, width = 'default' } = Astro.props;
 ---
 
-<Container as="header" class="page-header">
+<Container as="header" width={width} class="page-header">
+  <slot name="before" />
   {eyebrow && <p class="eyebrow">{eyebrow}</p>}
-  <h1>{title}</h1>
+  <h1><Emphasis text={title} /></h1>
   {intro && <p class="lead">{intro}</p>}
   <slot />
 </Container>
@@ -23,5 +26,13 @@ const { title, eyebrow, intro } = Astro.props;
     display: grid;
     gap: var(--space-s);
     padding-block: var(--space-2xl) var(--space-xl);
+  }
+
+  .page-header h1 {
+    max-width: 18ch;
+  }
+
+  .page-header :global(.lead) {
+    margin-top: var(--space-2xs);
   }
 </style>

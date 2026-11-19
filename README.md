@@ -10,10 +10,10 @@ Bilingual (Italian default, English under `/en/`), statically generated, content
 | Content | Sanity Content Lake (dataset `production`) | Sanity |
 | Source / CI | GitHub → Netlify automatic deploys | GitHub, Netlify |
 
-> **Project status — Phase 2 (CMS integration).** Every page reads its content from Sanity,
-> in both languages, including project, article and generic pages. Visual design of the
-> pages is refined in Phase 3. Netlify configuration (`netlify.toml`, contact form)
-> arrives in Phase 4; the steps below already describe it.
+> **Project status — Phase 3 (visual implementation).** All pages are designed on the brand
+> manual, responsive and checked for accessibility (axe: 0 violations; WCAG AA contrast).
+> Netlify configuration (`netlify.toml`, form notifications, build hook) arrives in Phase 4;
+> the steps below already describe it.
 
 ---
 
@@ -243,6 +243,8 @@ npm exec --workspace studio -- sanity schema validate
 
 ### Editor guide (short)
 
+- **Italic word in titles:** wrap it in asterisks — `La vita segreta *delle dune*` — and the
+  website shows it in Fraunces italic, as in the brand manual. Slugs ignore the asterisks.
 - The sidebar is organised by section. Translated content (Servizi, Progetti, Articoli,
   Pagine) is split into **Italiano** and **English**.
 - To translate a document, open it and use the **Translations** menu (language icon) in
@@ -282,9 +284,16 @@ npm exec --workspace studio -- sanity schema validate
    - HTTP method: `POST`, no projection, API version `v2025-02-19` or later
 3. Publish a test change and watch the deploy start in Netlify → **Deploys**.
 
-## Contact form (planned, Phase 4)
+## Contact form
 
-Recommended: **Netlify Forms** — works with static HTML, built-in spam filtering
+The form ([`ContactForm.astro`](web/src/components/content/ContactForm.astro)) is plain HTML
+with native validation and no JavaScript: name, email, subject, message and a required
+privacy consent linked to the page chosen in *Impostazioni sito → Pagina della privacy
+policy*. It posts to Netlify Forms (form name `contact`, hidden `language` field) and then
+shows `/contatti/grazie/` or `/en/contact/thank-you/` (texts in *Testi delle sezioni*).
+Submissions only work on Netlify, not on the local dev server.
+
+Handled by **Netlify Forms** — works with static HTML, built-in spam filtering
 (Akismet) plus a honeypot field, optional reCAPTCHA, email notifications to the address
 of your choice, 100 submissions/month on the free plan. The email recipient is configured
 in Netlify, not in code, so it can change at any time. If more volume or a custom email

@@ -1,5 +1,6 @@
 import { DocumentIcon } from '@sanity/icons/Document';
 import { defineField, defineType } from 'sanity';
+import { emphasisHint } from '../../lib/text';
 import { reservedSlugs } from '../../lib/languages';
 import { groups, languageField, slugField } from './_fields';
 
@@ -20,6 +21,7 @@ export const page = defineType({
       title: 'Titolo',
       type: 'string',
       group: 'content',
+      description: emphasisHint,
       validation: (rule) => rule.required(),
     }),
     {

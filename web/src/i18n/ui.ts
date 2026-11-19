@@ -68,6 +68,7 @@ interface UiStrings {
   articles: {
     publishedOn: string;
     by: string;
+    author: string;
     categories: string;
     tags: string;
   };
@@ -82,6 +83,21 @@ interface UiStrings {
     phone: string;
     address: string;
     social: string;
+    formTitle: string;
+    required: string;
+    name: string;
+    emailField: string;
+    subject: string;
+    message: string;
+    consentBefore: string;
+    consentLink: string;
+    consentAfter: string;
+    consentNoLink: string;
+    submit: string;
+    honeypot: string;
+    thanksTitle: string;
+    thanksText: string;
+    backHome: string;
   };
   notFound: {
     title: string;
@@ -159,6 +175,7 @@ export const ui: Record<Locale, UiStrings> = {
     articles: {
       publishedOn: 'Pubblicato il',
       by: 'di',
+      author: 'Autore',
       categories: 'Categorie',
       tags: 'Tag',
     },
@@ -181,6 +198,21 @@ export const ui: Record<Locale, UiStrings> = {
       phone: 'Telefono',
       address: 'Dove',
       social: 'Social',
+      formTitle: 'Scrivimi',
+      required: 'Tutti i campi sono obbligatori.',
+      name: 'Nome e cognome',
+      emailField: 'Email',
+      subject: 'Oggetto',
+      message: 'Messaggio',
+      consentBefore: 'Ho letto la ',
+      consentLink: 'privacy policy',
+      consentAfter: ' e acconsento al trattamento dei miei dati per ricevere una risposta.',
+      consentNoLink: 'Acconsento al trattamento dei miei dati per ricevere una risposta.',
+      submit: 'Invia il messaggio',
+      honeypot: 'Non compilare questo campo',
+      thanksTitle: 'Messaggio inviato',
+      thanksText: 'Grazie per avermi scritto: ti risponderò al più presto.',
+      backHome: 'Torna alla home',
     },
     notFound: {
       title: 'Pagina non trovata',
@@ -256,6 +288,7 @@ export const ui: Record<Locale, UiStrings> = {
     articles: {
       publishedOn: 'Published on',
       by: 'by',
+      author: 'Author',
       categories: 'Categories',
       tags: 'Tags',
     },
@@ -278,6 +311,21 @@ export const ui: Record<Locale, UiStrings> = {
       phone: 'Phone',
       address: 'Where',
       social: 'Social',
+      formTitle: 'Write to me',
+      required: 'All fields are required.',
+      name: 'Full name',
+      emailField: 'Email',
+      subject: 'Subject',
+      message: 'Message',
+      consentBefore: 'I have read the ',
+      consentLink: 'privacy policy',
+      consentAfter: ' and agree to the processing of my data in order to receive a reply.',
+      consentNoLink: 'I agree to the processing of my data in order to receive a reply.',
+      submit: 'Send message',
+      honeypot: 'Do not fill in this field',
+      thanksTitle: 'Message sent',
+      thanksText: 'Thank you for getting in touch: I will reply as soon as possible.',
+      backHome: 'Back to home page',
     },
     notFound: {
       title: 'Page not found',

@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { emphasisHint } from '../../lib/text';
 
 /** Heading, introduction and SEO of a listing page (Servizi, Progetti…). */
 export const sectionIntro = defineType({
@@ -11,6 +12,7 @@ export const sectionIntro = defineType({
       name: 'title',
       title: 'Titolo',
       type: 'string',
+      description: emphasisHint,
       validation: (rule) => rule.required(),
     }),
     defineField({

@@ -188,6 +188,11 @@ export type SectionPages = {
   publications: SectionIntro;
   articles: SectionIntro;
   contact: SectionIntro;
+  contactForm?: {
+    formTitle?: string;
+    thanksTitle?: string;
+    thanksText?: string;
+  };
 };
 
 export type Biography = {
@@ -296,6 +301,7 @@ export type SiteSettings = {
   phone?: string;
   address?: LocaleText;
   vatNumber?: string;
+  privacyPage?: PageReference;
   socialLinks?: Array<
     {
       _key: string;
@@ -634,7 +640,7 @@ export type AllSanitySchemaTypes =
 
 // Source: ../web/src/lib/sanity/queries.ts
 // Variable: SITE_SETTINGS_QUERY
-// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{    siteName,    "tagline": select($language == "en" => tagline.en, tagline.it),    email,    phone,    "address": select($language == "en" => address.en, address.it),    vatNumber,    socialLinks[]{ _key, platform, label, url },    "defaultSeoDescription": select($language == "en" => defaultSeoDescription.en, defaultSeoDescription.it),    defaultShareImage { asset->{ _id, url, metadata { dimensions { width, height } } } }  }
+// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{    siteName,    "tagline": select($language == "en" => tagline.en, tagline.it),    email,    phone,    "address": select($language == "en" => address.en, address.it),    vatNumber,    "privacyPageSlug": select(      privacyPage->language == $language => privacyPage->slug.current,      *[_type == "translation.metadata" && references(^.privacyPage._ref)][0]        .translations[language == $language][0].value->slug.current    ),    socialLinks[]{ _key, platform, label, url },    "defaultSeoDescription": select($language == "en" => defaultSeoDescription.en, defaultSeoDescription.it),    defaultShareImage { asset->{ _id, url, metadata { dimensions { width, height } } } }  }
 export type SITE_SETTINGS_QUERY_RESULT = {
   siteName: string;
   tagline: string | null;
@@ -642,6 +648,7 @@ export type SITE_SETTINGS_QUERY_RESULT = {
   phone: string | null;
   address: string | null;
   vatNumber: string | null;
+  privacyPageSlug: string | null;
   socialLinks: Array<{
     _key: string;
     platform:
@@ -712,7 +719,7 @@ export type NAVIGATION_QUERY_RESULT = {
 
 // Source: ../web/src/lib/sanity/queries.ts
 // Variable: SECTION_PAGES_QUERY
-// Query: *[_type == "sectionPages" && _id == "sectionPages-" + $language][0]{    services { title, intro,   seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  } },    projects { title, intro,   seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  } },    publications { title, intro,   seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  } },    articles { title, intro,   seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  } },    contact { title, intro,   seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  } }  }
+// Query: *[_type == "sectionPages" && _id == "sectionPages-" + $language][0]{    services { title, intro,   seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  } },    projects { title, intro,   seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  } },    publications { title, intro,   seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  } },    articles { title, intro,   seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  } },    contact { title, intro,   seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  } },    contactForm { formTitle, thanksTitle, thanksText }  }
 export type SECTION_PAGES_QUERY_RESULT = {
   services: {
     title: string;
@@ -819,6 +826,11 @@ export type SECTION_PAGES_QUERY_RESULT = {
       } | null;
     } | null;
   };
+  contactForm: {
+    formTitle: string | null;
+    thanksTitle: string | null;
+    thanksText: string | null;
+  } | null;
 } | null;
 
 // Source: ../web/src/lib/sanity/queries.ts
@@ -1610,9 +1622,9 @@ export type PAGE_PAGES_QUERY_RESULT = Array<{
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    '\n  *[_type == "siteSettings" && _id == "siteSettings"][0]{\n    siteName,\n    "tagline": select($language == "en" => tagline.en, tagline.it),\n    email,\n    phone,\n    "address": select($language == "en" => address.en, address.it),\n    vatNumber,\n    socialLinks[]{ _key, platform, label, url },\n    "defaultSeoDescription": select($language == "en" => defaultSeoDescription.en, defaultSeoDescription.it),\n    defaultShareImage { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n': SITE_SETTINGS_QUERY_RESULT;
+    '\n  *[_type == "siteSettings" && _id == "siteSettings"][0]{\n    siteName,\n    "tagline": select($language == "en" => tagline.en, tagline.it),\n    email,\n    phone,\n    "address": select($language == "en" => address.en, address.it),\n    vatNumber,\n    "privacyPageSlug": select(\n      privacyPage->language == $language => privacyPage->slug.current,\n      *[_type == "translation.metadata" && references(^.privacyPage._ref)][0]\n        .translations[language == $language][0].value->slug.current\n    ),\n    socialLinks[]{ _key, platform, label, url },\n    "defaultSeoDescription": select($language == "en" => defaultSeoDescription.en, defaultSeoDescription.it),\n    defaultShareImage { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n': SITE_SETTINGS_QUERY_RESULT;
     '\n  *[_type == "navigation" && _id == "navigation"][0]{\n    mainMenu[]{ \n  _key,\n  "label": select($language == "en" => label.en, label.it),\n  linkType,\n  internalPage,\n  url,\n  "pageSlug": select(\n    page->language == $language => page->slug.current,\n    *[_type == "translation.metadata" && references(^.page._ref)][0]\n      .translations[language == $language][0].value->slug.current\n  )\n },\n    "footerSummary": select($language == "en" => footerSummary.en, footerSummary.it),\n    footerLinks[]{ \n  _key,\n  "label": select($language == "en" => label.en, label.it),\n  linkType,\n  internalPage,\n  url,\n  "pageSlug": select(\n    page->language == $language => page->slug.current,\n    *[_type == "translation.metadata" && references(^.page._ref)][0]\n      .translations[language == $language][0].value->slug.current\n  )\n }\n  }\n': NAVIGATION_QUERY_RESULT;
-    '\n  *[_type == "sectionPages" && _id == "sectionPages-" + $language][0]{\n    services { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n },\n    projects { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n },\n    publications { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n },\n    articles { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n },\n    contact { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n }\n  }\n': SECTION_PAGES_QUERY_RESULT;
+    '\n  *[_type == "sectionPages" && _id == "sectionPages-" + $language][0]{\n    services { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n },\n    projects { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n },\n    publications { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n },\n    articles { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n },\n    contact { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n },\n    contactForm { formTitle, thanksTitle, thanksText }\n  }\n': SECTION_PAGES_QUERY_RESULT;
     '{\n  "page": *[_type == "homePage" && _id == "homePage-" + $language][0]{\n    heroImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n    heroEyebrow,\n    heroTitle,\n    heroText,\n    introTitle,\n    introText,\n    "featuredProjects": featuredProjects[]->{ \n  _id,\n  title,\n  "slug": slug.current,\n  summary,\n  startDate,\n  endDate,\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  "category": category->{ \n  _id,\n  "title": select($language == "en" => title.en, title.it),\n  "slug": slug.current\n }\n },\n    "featuredPublications": featuredPublications[]->{ \n  _id,\n  title,\n  publicationType,\n  authors,\n  publishedAt,\n  publisher,\n  citationDetails,\n  doi,\n  url,\n  "description": select($language == "en" => description.en, description.it),\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n },\n    ctaTitle,\n    ctaText,\n    ctaLabel,\n    \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n\n  },\n  "services": *[_type == "service" && language == $language && defined(slug.current)]\n    | order(order asc, title asc){ \n  _id,\n  title,\n  "slug": slug.current,\n  summary,\n  image { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n },\n  "latestArticles": *[_type == "article" && language == $language && defined(slug.current)]\n    | order(publishedAt desc)[0...3]{ \n  _id,\n  title,\n  "slug": slug.current,\n  excerpt,\n  publishedAt,\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  "categories": categories[]->{ \n  _id,\n  "title": select($language == "en" => title.en, title.it),\n  "slug": slug.current\n },\n  tags\n }\n}': HOME_QUERY_RESULT;
     '\n  *[_type == "biography" && _id == "biography-" + $language][0]{\n    title,\n    introduction,\n    profileImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n    body[]{ \n  ...,\n  _type == "accessibleImage" => { _type, _key, \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n },\n    education[]{ _key, title, organization, location, startYear, endYear, description },\n    experience[]{ _key, title, organization, location, startYear, endYear, description },\n    skills[]{ _key, title, items },\n    qualifications[]{ _key, title, issuer, year, url },\n    \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n\n  }\n': BIOGRAPHY_QUERY_RESULT;
     '\n  *[_type == "service" && language == $language && defined(slug.current)] | order(order asc, title asc){\n    \n  _id,\n  title,\n  "slug": slug.current,\n  summary,\n  image { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n,\n    description[]{ \n  ...,\n  _type == "accessibleImage" => { _type, _key, \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n },\n    "relatedProjects": *[_type == "project" && language == $language && defined(slug.current) && references(^._id)]\n      | order(startDate desc){ _id, title, "slug": slug.current }\n  }\n': SERVICES_QUERY_RESULT;
