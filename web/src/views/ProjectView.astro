@@ -1,0 +1,166 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/ui/Container.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import Figure from '@/components/content/Figure.astro';
+import RichText from '@/components/content/RichText.astro';
+import { getRoutePath, type Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import { formatPeriod } from '@/lib/format';
+import { projectPath, translationAlternates } from '@/lib/links';
+import type { ProjectDocument } from '@/lib/paths';
+import { buildSeo } from '@/lib/seo';
+import { getSiteSettings } from '@/lib/sanity/fetch';
+
+interface Props {
+  locale: Locale;
+  project: ProjectDocument & { slug: string };
+}
+
+const { locale, project } = Astro.props;
+const strings = t(locale);
+const settings = await getSiteSettings(locale);
+const seo = buildSeo({
+  title: project.title ?? '',
+  seo: project.seo,
+  description: project.summary,
+  image: project.coverImage,
+  settings,
+});
+const alternates = translationAlternates(project.translations, { locale, slug: project.slug }, projectPath);
+
+const facts = [
+  project.startDate && {
+    label: strings.projects.period,
+    value: formatPeriod(project.startDate, project.endDate, locale, strings.common.ongoing),
+  },
+  project.category?.title && { label: strings.projects.category, value: project.category.title },
+  project.client && { label: strings.projects.client, value: project.client },
+  project.location && { label: strings.projects.location, value: project.location },
+].filter((fact): fact is { label: string; value: string } => Boolean(fact));
+const gallery = project.gallery ?? [];
+const relatedServices = (project.relatedServices ?? []).filter((s) => s !== null);
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  image={seo.image}
+  imageAlt={seo.imageAlt}
+  noindex={seo.noindex}
+  locale={locale}
+  alternates={alternates}
+>
+  <PageHeader title={project.title ?? ''} intro={project.summary}>
+    <p class="back"><a href={getRoutePath('projects', locale)}>← {strings.nav.projects}</a></p>
+  </PageHeader>
+
+  <Container>
+    <Figure image={project.coverImage} sizes="(min-width: 76rem) 76rem, 100vw" priority />
+  </Container>
+
+  <Container class="project">
+    {
+      facts.length > 0 && (
+        <dl class="facts">
+          {facts.map((fact) => (
+            <div>
+              <dt>{fact.label}</dt>
+              <dd>{fact.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )
+    }
+    <RichText value={project.body} />
+  </Container>
+
+  {
+    gallery.length > 0 && (
+      <section class="section" aria-labelledby="gallery-title">
+        <Container>
+          <h2 id="gallery-title" class="visually-hidden">{strings.projects.gallery}</h2>
+          <ul role="list" class="gallery">
+            {gallery.map((image) => (
+              <li>
+                <Figure image={image} aspectRatio={4 / 3} sizes="(min-width: 60rem) 33vw, (min-width: 40rem) 50vw, 100vw" />
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </section>
+    )
+  }
+
+  {
+    relatedServices.length > 0 && (
+      <Container class="related">
+        <h2>{strings.projects.relatedServices}</h2>
+        <ul>
+          {relatedServices.map((service) => (
+            <li>
+              <a href={`${getRoutePath('services', locale)}#${service.slug}`}>{service.title}</a>
+            </li>
+          ))}
+        </ul>
+      </Container>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .back {
+    order: -1;
+    font-size: var(--text-sm);
+  }
+
+  :global(.project) {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-xl);
+  }
+
+  @media (min-width: 60rem) {
+    :global(.project) {
+      grid-template-columns: 16rem 1fr;
+      align-items: start;
+    }
+  }
+
+  .facts {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  dt {
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-heading-alt);
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .gallery {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    padding: 0;
+  }
+
+  :global(.related) {
+    padding-bottom: var(--space-2xl);
+  }
+
+  :global(.related) h2 {
+    margin-bottom: var(--space-s);
+    font-size: var(--text-xl);
+  }
+
+  :global(.related) ul {
+    padding-left: 1.1em;
+  }
+</style>

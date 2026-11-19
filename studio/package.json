@@ -1,0 +1,27 @@
+{
+  "name": "studio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "typecheck": "tsc --noEmit",
+    "schema:extract": "sanity schema extract --enforce-required-fields --path schema.json --force",
+    "typegen": "npm run schema:extract && sanity typegen generate",
+    "seed": "node seed/build-sample.mjs && sanity dataset import seed/sample.ndjson --dataset development --replace"
+  },
+  "dependencies": {
+    "@sanity/document-internationalization": "^6.3.0",
+    "@sanity/icons": "^5.4.0",
+    "@sanity/vision": "^6.24.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "sanity": "^6.24.0",
+    "styled-components": "^6.6.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "~6.0.3"
+  }
+}

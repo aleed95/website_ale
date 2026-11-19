@@ -1,0 +1,79 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/ui/Container.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import EmptyState from '@/components/ui/EmptyState.astro';
+import PublicationItem from '@/components/content/PublicationItem.astro';
+import { getRouteAlternates, type Locale } from '@/i18n/config';
+import { getSectionMeta } from '@/lib/sections';
+import { sanityClient } from '@/lib/sanity/fetch';
+import { PUBLICATIONS_QUERY } from '@/lib/sanity/queries';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const [meta, publications] = await Promise.all([
+  getSectionMeta('publications', locale),
+  sanityClient.fetch(PUBLICATIONS_QUERY, { language: locale }),
+]);
+
+// Grouped by year, newest first.
+const byYear = new Map<string, typeof publications>();
+for (const publication of publications) {
+  const year = publication.publishedAt?.slice(0, 4) ?? '—';
+  byYear.set(year, [...(byYear.get(year) ?? []), publication]);
+}
+---
+
+<BaseLayout
+  title={meta.seo.title}
+  description={meta.seo.description}
+  image={meta.seo.image}
+  noindex={meta.seo.noindex}
+  locale={locale}
+  alternates={getRouteAlternates('publications')}
+>
+  <PageHeader title={meta.title} intro={meta.intro} />
+  <Container class="publications">
+    {publications.length === 0 && <EmptyState locale={locale} />}
+    {
+      [...byYear].map(([year, items]) => (
+        <section aria-labelledby={`year-${year}`} class="year">
+          <h2 id={`year-${year}`}>{year}</h2>
+          <div>
+            {items.map((publication) => (
+              <PublicationItem publication={publication} locale={locale} />
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </Container>
+</BaseLayout>
+
+<style>
+  :global(.publications) {
+    display: grid;
+    gap: var(--space-xl);
+    padding-bottom: var(--space-2xl);
+  }
+
+  .year {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  @media (min-width: 48rem) {
+    .year {
+      grid-template-columns: 8rem 1fr;
+    }
+  }
+
+  .year h2 {
+    padding-top: var(--space-m);
+    font-size: var(--text-2xl);
+    color: var(--color-heading-alt);
+  }
+</style>

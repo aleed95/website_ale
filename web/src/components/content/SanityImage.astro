@@ -1,0 +1,92 @@
+---
+/**
+ * Responsive image from the Sanity CDN.
+ * - srcset in several widths, AVIF/WebP negotiated by the CDN (auto=format)
+ * - explicit width/height → no layout shift
+ * - lazy by default; pass `priority` for the main image above the fold (LCP)
+ * - optional blurred low-quality placeholder while loading
+ */
+import { hasImage, urlFor, type SanityImageSource } from '@/lib/sanity/image';
+
+interface Props {
+  image: SanityImageSource | null | undefined;
+  /** Rendered width hint for the browser, e.g. "(min-width: 60rem) 50vw, 100vw". */
+  sizes?: string | undefined;
+  /** Force a crop ratio (width / height). Defaults to the original ratio. */
+  aspectRatio?: number | undefined;
+  widths?: number[] | undefined;
+  priority?: boolean | undefined;
+  placeholder?: boolean | undefined;
+  class?: string | undefined;
+  /** Override the CMS alt text; pass "" for purely decorative images. */
+  alt?: string | undefined;
+}
+
+const {
+  image,
+  sizes = '100vw',
+  aspectRatio,
+  widths = [400, 640, 960, 1280, 1600, 2000, 2400],
+  priority = false,
+  placeholder = true,
+  class: className,
+  alt,
+} = Astro.props;
+
+const source = hasImage(image) ? image : null;
+const dimensions = source?.asset.metadata?.dimensions;
+const originalWidth = dimensions?.width ?? 2400;
+const originalHeight = dimensions?.height ?? 1600;
+
+// The crop chosen in the Studio changes the effective ratio.
+const crop = source?.crop;
+const croppedRatio =
+  (originalWidth * (1 - (crop?.left ?? 0) - (crop?.right ?? 0))) /
+  (originalHeight * (1 - (crop?.top ?? 0) - (crop?.bottom ?? 0)));
+const ratio = aspectRatio ?? croppedRatio;
+
+// Never upscale: keep widths up to the original size.
+const usable = widths.filter((w) => w <= originalWidth);
+const candidates = usable.length > 0 ? usable : [originalWidth];
+
+const build = (w: number) => {
+  if (!source) return '';
+  let url = urlFor(source).width(w).auto('format').quality(75).fit('crop');
+  if (aspectRatio) url = url.height(Math.round(w / aspectRatio));
+  return url.url();
+};
+
+const largest = candidates[candidates.length - 1] ?? originalWidth;
+const srcset = candidates.map((w) => `${build(w)} ${w}w`).join(', ');
+const src = build(candidates[Math.min(2, candidates.length - 1)] ?? largest);
+const lqip = placeholder ? source?.asset.metadata?.lqip : undefined;
+const altText = alt ?? source?.alt ?? '';
+---
+
+{
+  source && (
+    <img
+      src={src}
+      srcset={srcset}
+      sizes={sizes}
+      width={largest}
+      height={Math.round(largest / ratio)}
+      alt={altText}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding={priority ? 'sync' : 'async'}
+      fetchpriority={priority ? 'high' : 'auto'}
+      class:list={['sanity-image', className]}
+      style={lqip ? `background-image: url(${lqip})` : undefined}
+    />
+  )
+}
+
+<style>
+  .sanity-image {
+    width: 100%;
+    height: auto;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--color-bg-alt);
+  }
+</style>

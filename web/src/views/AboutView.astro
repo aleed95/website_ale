@@ -1,0 +1,198 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/ui/Container.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import EmptyState from '@/components/ui/EmptyState.astro';
+import Figure from '@/components/content/Figure.astro';
+import RichText from '@/components/content/RichText.astro';
+import { getRouteAlternates, type Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import { formatYears } from '@/lib/format';
+import { buildSeo } from '@/lib/seo';
+import { getSiteSettings, sanityClient } from '@/lib/sanity/fetch';
+import { BIOGRAPHY_QUERY } from '@/lib/sanity/queries';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+const [bio, settings] = await Promise.all([
+  sanityClient.fetch(BIOGRAPHY_QUERY, { language: locale }),
+  getSiteSettings(locale),
+]);
+
+const title = bio?.title || strings.nav.about;
+const seo = buildSeo({ title, seo: bio?.seo, description: bio?.introduction, image: bio?.profileImage, settings });
+
+// Newest first, as on the reference site.
+const byNewest = <T extends { startYear: number | null; endYear: number | null }>(items: T[] | null | undefined) =>
+  [...(items ?? [])].sort((a, b) => (b.endYear ?? 9999) - (a.endYear ?? 9999) || (b.startYear ?? 0) - (a.startYear ?? 0));
+
+const timelines = [
+  { id: 'education', title: strings.about.education, items: byNewest(bio?.education) },
+  { id: 'experience', title: strings.about.experience, items: byNewest(bio?.experience) },
+].filter((timeline) => timeline.items.length > 0);
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  image={seo.image}
+  imageAlt={seo.imageAlt}
+  noindex={seo.noindex}
+  locale={locale}
+  alternates={getRouteAlternates('about')}
+>
+  <PageHeader title={title} />
+
+  {!bio && <Container><EmptyState locale={locale} /></Container>}
+
+  {
+    bio && (
+      <Container class="about-intro">
+        <p class="lead">{bio.introduction}</p>
+        <Figure image={bio.profileImage} sizes="(min-width: 60rem) 40vw, 100vw" priority class="portrait" />
+      </Container>
+    )
+  }
+
+  {bio?.body && <Container class="about-body"><RichText value={bio.body} /></Container>}
+
+  {
+    timelines.map((timeline) => (
+      <section class="section" aria-labelledby={timeline.id}>
+        <Container>
+          <h2 id={timeline.id} class="section-title">{timeline.title}</h2>
+          <ol role="list" class="timeline">
+            {timeline.items.map((item) => (
+              <li>
+                <p class="years">{formatYears(item.startYear, item.endYear, strings.common.present)}</p>
+                <div>
+                  <h3>{item.title}</h3>
+                  {(item.organization || item.location) && (
+                    <p class="meta">{[item.organization, item.location].filter(Boolean).join(', ')}</p>
+                  )}
+                  {item.description && <p>{item.description}</p>}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Container>
+      </section>
+    ))
+  }
+
+  {
+    bio?.skills && bio.skills.length > 0 && (
+      <section class="section section--alt" aria-labelledby="skills">
+        <Container>
+          <h2 id="skills" class="section-title">{strings.about.skills}</h2>
+          <div class="skills">
+            {bio.skills.map((group) => (
+              <div>
+                <h3>{group.title}</h3>
+                <ul>
+                  {(group.items ?? []).map((skill) => (
+                    <li>{skill}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+    )
+  }
+
+  {
+    bio?.qualifications && bio.qualifications.length > 0 && (
+      <section class="section" aria-labelledby="qualifications">
+        <Container>
+          <h2 id="qualifications" class="section-title">{strings.about.qualifications}</h2>
+          <ul class="qualifications">
+            {bio.qualifications.map((q) => (
+              <li>
+                {q.url ? <a href={q.url} rel="noopener">{q.title}</a> : q.title}
+                {(q.issuer || q.year) && <span class="meta"> — {[q.issuer, q.year].filter(Boolean).join(', ')}</span>}
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  :global(.about-intro) {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: start;
+    padding-bottom: var(--space-xl);
+  }
+
+  @media (min-width: 60rem) {
+    :global(.about-intro) {
+      grid-template-columns: 3fr 2fr;
+    }
+  }
+
+  :global(.about-body) {
+    padding-bottom: var(--space-xl);
+  }
+
+  .section-title {
+    margin-bottom: var(--space-l);
+    font-size: var(--text-2xl);
+  }
+
+  .timeline {
+    display: grid;
+    gap: var(--space-l);
+    padding: 0;
+  }
+
+  .timeline li {
+    display: grid;
+    gap: var(--space-2xs) var(--space-l);
+  }
+
+  @media (min-width: 48rem) {
+    .timeline li {
+      grid-template-columns: 9rem 1fr;
+    }
+  }
+
+  .years {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    color: var(--color-heading-alt);
+  }
+
+  .timeline h3 {
+    font-size: var(--text-lg);
+  }
+
+  .skills {
+    display: grid;
+    gap: var(--space-l);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  }
+
+  .skills ul,
+  .qualifications {
+    padding-left: 1.1em;
+  }
+
+  .skills h3 {
+    margin-bottom: var(--space-2xs);
+    font-size: var(--text-lg);
+  }
+
+  .qualifications {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+</style>

@@ -1,0 +1,116 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/ui/Container.astro';
+import Figure from '@/components/content/Figure.astro';
+import RichText from '@/components/content/RichText.astro';
+import { getRoutePath, type Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import { formatDate } from '@/lib/format';
+import { articlePath, translationAlternates } from '@/lib/links';
+import type { ArticleDocument } from '@/lib/paths';
+import { buildSeo } from '@/lib/seo';
+import { getSiteSettings } from '@/lib/sanity/fetch';
+
+interface Props {
+  locale: Locale;
+  article: ArticleDocument & { slug: string };
+}
+
+const { locale, article } = Astro.props;
+const strings = t(locale);
+const settings = await getSiteSettings(locale);
+const seo = buildSeo({
+  title: article.title ?? '',
+  seo: article.seo,
+  description: article.excerpt,
+  image: article.coverImage,
+  settings,
+});
+const alternates = translationAlternates(article.translations, { locale, slug: article.slug }, articlePath);
+const categories = (article.categories ?? []).flatMap((c) => (c?.title ? [c.title] : []));
+const tags = article.tags ?? [];
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  image={seo.image}
+  imageAlt={seo.imageAlt}
+  noindex={seo.noindex}
+  locale={locale}
+  alternates={alternates}
+  ogType="article"
+>
+  {article.publishedAt && <meta slot="head" property="article:published_time" content={article.publishedAt} />}
+  {categories.map((category) => <meta slot="head" property="article:section" content={category} />)}
+  {tags.map((tag) => <meta slot="head" property="article:tag" content={tag} />)}
+
+  <article>
+    <Container width="text" class="article-header">
+      <p class="back"><a href={getRoutePath('articles', locale)}>← {strings.nav.articles}</a></p>
+      {categories.length > 0 && <p class="eyebrow">{categories.join(' · ')}</p>}
+      <h1>{article.title}</h1>
+      <p class="meta">
+        {article.publishedAt && <time datetime={article.publishedAt}>{formatDate(article.publishedAt, locale)}</time>}
+        {article.author?.name && <span> · {strings.articles.by} {article.author.name}</span>}
+      </p>
+      <p class="lead">{article.excerpt}</p>
+    </Container>
+
+    <Container>
+      <Figure image={article.coverImage} sizes="(min-width: 76rem) 76rem, 100vw" priority />
+    </Container>
+
+    <Container width="text" class="article-body">
+      <RichText value={article.body} />
+      {
+        tags.length > 0 && (
+          <div class="tags">
+            <h2 class="visually-hidden">{strings.articles.tags}</h2>
+            <ul role="list">
+              {tags.map((tag) => (
+                <li>{tag}</li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </Container>
+  </article>
+</BaseLayout>
+
+<style>
+  :global(.article-header) {
+    display: grid;
+    gap: var(--space-s);
+    padding-block: var(--space-2xl) var(--space-xl);
+  }
+
+  :global(.article-header) h1 {
+    font-size: var(--text-3xl);
+  }
+
+  .back {
+    font-size: var(--text-sm);
+  }
+
+  :global(.article-body) {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-xl) var(--space-2xl);
+  }
+
+  .tags ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    padding: 0;
+  }
+
+  .tags li {
+    padding: var(--space-3xs) var(--space-xs);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xs);
+  }
+</style>

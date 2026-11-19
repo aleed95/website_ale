@@ -1,0 +1,12 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import ArticleView from '@/views/ArticleView.astro';
+import { getArticlePaths } from '@/lib/paths';
+
+export const getStaticPaths = (() => getArticlePaths('it')) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { article } = Astro.props as Props;
+---
+
+<ArticleView locale="it" article={article} />

@@ -1,0 +1,207 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/ui/Container.astro';
+import Button from '@/components/ui/Button.astro';
+import SanityImage from '@/components/content/SanityImage.astro';
+import ProjectCard from '@/components/content/ProjectCard.astro';
+import ArticleCard from '@/components/content/ArticleCard.astro';
+import PublicationItem from '@/components/content/PublicationItem.astro';
+import { getRouteAlternates, getRoutePath, type Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import { buildSeo } from '@/lib/seo';
+import { getSiteSettings, sanityClient } from '@/lib/sanity/fetch';
+import { HOME_QUERY } from '@/lib/sanity/queries';
+import { siteFallback } from '@/lib/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+const [{ page, services, latestArticles }, settings] = await Promise.all([
+  sanityClient.fetch(HOME_QUERY, { language: locale }),
+  getSiteSettings(locale),
+]);
+
+const siteName = settings?.siteName || siteFallback.name;
+const seo = buildSeo({
+  title: siteName,
+  seo: page?.seo,
+  description: page?.heroText,
+  image: page?.heroImage,
+  settings,
+});
+const featuredProjects = (page?.featuredProjects ?? []).filter((p) => p !== null);
+const featuredPublications = (page?.featuredPublications ?? []).filter((p) => p !== null);
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  image={seo.image}
+  imageAlt={seo.imageAlt}
+  noindex={seo.noindex}
+  locale={locale}
+  alternates={getRouteAlternates('home')}
+>
+  <section class="hero" aria-labelledby="hero-title">
+    {
+      page?.heroImage?.asset ? (
+        <SanityImage image={page.heroImage} sizes="100vw" aspectRatio={16 / 9} priority class="hero-image" />
+      ) : (
+        <div class="hero-image hero-placeholder" aria-hidden="true" />
+      )
+    }
+    <Container class="hero-content">
+      {page?.heroEyebrow && <p class="eyebrow">{page.heroEyebrow}</p>}
+      <h1 id="hero-title">{page?.heroTitle || siteName}</h1>
+      {page?.heroText && <p class="lead">{page.heroText}</p>}
+    </Container>
+  </section>
+
+  {
+    (page?.introTitle || page?.introText) && (
+      <section class="section" aria-labelledby="intro-title">
+        <Container class="intro">
+          <h2 id="intro-title">{page?.introTitle || strings.nav.about}</h2>
+          {page?.introText && <p class="lead">{page.introText}</p>}
+          <div>
+            <Button href={getRoutePath('about', locale)} variant="secondary">
+              {strings.common.readMore}
+            </Button>
+          </div>
+        </Container>
+      </section>
+    )
+  }
+
+  {
+    services.length > 0 && (
+      <section class="section section--alt" aria-labelledby="services-title">
+        <Container>
+          <div class="section-heading">
+            <h2 id="services-title">{strings.home.services}</h2>
+            <a href={getRoutePath('services', locale)}>{strings.home.allServices}</a>
+          </div>
+          <ul role="list" class="card-grid">
+            {services.map((service) => (
+              <li class="card">
+                <h3 class="title">
+                  <a href={`${getRoutePath('services', locale)}#${service.slug}`}>{service.title}</a>
+                </h3>
+                <p>{service.summary}</p>
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </section>
+    )
+  }
+
+  {
+    featuredProjects.length > 0 && (
+      <section class="section" aria-labelledby="projects-title">
+        <Container>
+          <div class="section-heading">
+            <h2 id="projects-title">{strings.home.selectedProjects}</h2>
+            <a href={getRoutePath('projects', locale)}>{strings.home.allProjects}</a>
+          </div>
+          <ul role="list" class="card-grid">
+            {featuredProjects.map((project) => (
+              <li>
+                <ProjectCard project={project} locale={locale} headingLevel="h3" />
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </section>
+    )
+  }
+
+  {
+    latestArticles.length > 0 && (
+      <section class="section section--alt" aria-labelledby="articles-title">
+        <Container>
+          <div class="section-heading">
+            <h2 id="articles-title">{strings.home.latestArticles}</h2>
+            <a href={getRoutePath('articles', locale)}>{strings.home.allArticles}</a>
+          </div>
+          <ul role="list" class="card-grid">
+            {latestArticles.map((article) => (
+              <li>
+                <ArticleCard article={article} locale={locale} headingLevel="h3" />
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </section>
+    )
+  }
+
+  {
+    featuredPublications.length > 0 && (
+      <section class="section" aria-labelledby="publications-title">
+        <Container>
+          <div class="section-heading">
+            <h2 id="publications-title">{strings.home.selectedPublications}</h2>
+            <a href={getRoutePath('publications', locale)}>{strings.home.allPublications}</a>
+          </div>
+          {featuredPublications.map((publication) => (
+            <PublicationItem publication={publication} locale={locale} />
+          ))}
+        </Container>
+      </section>
+    )
+  }
+
+  {
+    page?.ctaTitle && (
+      <section class="section cta" aria-labelledby="cta-title">
+        <Container class="cta-inner">
+          <h2 id="cta-title">{page.ctaTitle}</h2>
+          {page.ctaText && <p class="lead">{page.ctaText}</p>}
+          <div>
+            <Button href={getRoutePath('contact', locale)}>{page.ctaLabel || strings.nav.contact}</Button>
+          </div>
+        </Container>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .hero {
+    display: grid;
+  }
+
+  .hero :global(.hero-image) {
+    max-height: 75vh;
+    object-fit: cover;
+  }
+
+  .hero-placeholder {
+    aspect-ratio: 21 / 9;
+    background: linear-gradient(135deg, var(--color-surface-sage), var(--color-surface-sky));
+  }
+
+  .hero :global(.hero-content),
+  .section :global(.intro),
+  .cta :global(.cta-inner) {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .hero :global(.hero-content) {
+    padding-block: var(--space-2xl);
+  }
+
+  .cta {
+    background-color: var(--color-bg-primary);
+  }
+
+  .cta h2,
+  .cta p {
+    color: var(--color-text-inverse);
+  }
+</style>

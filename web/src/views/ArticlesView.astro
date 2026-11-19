@@ -1,0 +1,48 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/ui/Container.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import EmptyState from '@/components/ui/EmptyState.astro';
+import ArticleCard from '@/components/content/ArticleCard.astro';
+import { getRouteAlternates, type Locale } from '@/i18n/config';
+import { getSectionMeta } from '@/lib/sections';
+import { sanityClient } from '@/lib/sanity/fetch';
+import { ARTICLES_QUERY } from '@/lib/sanity/queries';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const [meta, articles] = await Promise.all([
+  getSectionMeta('articles', locale),
+  sanityClient.fetch(ARTICLES_QUERY, { language: locale }),
+]);
+---
+
+<BaseLayout
+  title={meta.seo.title}
+  description={meta.seo.description}
+  image={meta.seo.image}
+  noindex={meta.seo.noindex}
+  locale={locale}
+  alternates={getRouteAlternates('articles')}
+>
+  <PageHeader title={meta.title} intro={meta.intro} />
+  <Container class="listing">
+    {articles.length === 0 && <EmptyState locale={locale} />}
+    <ul role="list" class="card-grid">
+      {articles.map((article) => (
+        <li>
+          <ArticleCard article={article} locale={locale} />
+        </li>
+      ))}
+    </ul>
+  </Container>
+</BaseLayout>
+
+<style>
+  :global(.listing) {
+    padding-bottom: var(--space-2xl);
+  }
+</style>

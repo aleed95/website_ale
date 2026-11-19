@@ -1,0 +1,46 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/ui/Container.astro';
+import RichText from '@/components/content/RichText.astro';
+import type { Locale } from '@/i18n/config';
+import { getPagePath, translationAlternates } from '@/lib/links';
+import type { PageDocument } from '@/lib/paths';
+import { buildSeo } from '@/lib/seo';
+import { getSiteSettings } from '@/lib/sanity/fetch';
+
+interface Props {
+  locale: Locale;
+  page: PageDocument & { slug: string };
+}
+
+const { locale, page } = Astro.props;
+const settings = await getSiteSettings(locale);
+const seo = buildSeo({ title: page.title ?? '', seo: page.seo, settings });
+const alternates = translationAlternates(page.translations, { locale, slug: page.slug }, getPagePath);
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  image={seo.image}
+  noindex={seo.noindex}
+  locale={locale}
+  alternates={alternates}
+>
+  <Container width="text" class="page">
+    <h1>{page.title}</h1>
+    <RichText value={page.body} />
+  </Container>
+</BaseLayout>
+
+<style>
+  :global(.page) {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-2xl);
+  }
+
+  :global(.page) h1 {
+    font-size: var(--text-3xl);
+  }
+</style>

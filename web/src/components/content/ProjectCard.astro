@@ -1,0 +1,29 @@
+---
+import type { Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import { formatPeriod } from '@/lib/format';
+import { projectPath } from '@/lib/links';
+import type { PROJECTS_QUERY_RESULT } from '@/lib/sanity/sanity.types';
+import SanityImage from './SanityImage.astro';
+
+interface Props {
+  project: PROJECTS_QUERY_RESULT[number];
+  locale: Locale;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { project, locale, headingLevel: Heading = 'h2' } = Astro.props;
+const href = projectPath(locale, project.slug ?? '');
+---
+
+<article class="card">
+  <SanityImage image={project.coverImage} aspectRatio={4 / 3} sizes="(min-width: 60rem) 33vw, (min-width: 40rem) 50vw, 100vw" alt="" />
+  <div class="body">
+    {project.category?.title && <p class="eyebrow">{project.category.title}</p>}
+    <Heading class="title"><a href={href}>{project.title}</a></Heading>
+    {project.startDate && (
+      <p class="meta">{formatPeriod(project.startDate, project.endDate, locale, t(locale).common.ongoing)}</p>
+    )}
+    <p>{project.summary}</p>
+  </div>
+</article>

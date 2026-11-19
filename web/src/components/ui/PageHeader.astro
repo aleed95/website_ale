@@ -1,0 +1,27 @@
+---
+/** Title block at the top of a page: optional eyebrow, h1 and intro. */
+import Container from './Container.astro';
+
+interface Props {
+  title: string;
+  eyebrow?: string | null | undefined;
+  intro?: string | null | undefined;
+}
+
+const { title, eyebrow, intro } = Astro.props;
+---
+
+<Container as="header" class="page-header">
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  <h1>{title}</h1>
+  {intro && <p class="lead">{intro}</p>}
+  <slot />
+</Container>
+
+<style>
+  .page-header {
+    display: grid;
+    gap: var(--space-s);
+    padding-block: var(--space-2xl) var(--space-xl);
+  }
+</style>

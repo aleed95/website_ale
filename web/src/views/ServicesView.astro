@@ -1,0 +1,114 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/ui/Container.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import EmptyState from '@/components/ui/EmptyState.astro';
+import Button from '@/components/ui/Button.astro';
+import SanityImage from '@/components/content/SanityImage.astro';
+import RichText from '@/components/content/RichText.astro';
+import { getRouteAlternates, getRoutePath, type Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import { projectPath } from '@/lib/links';
+import { getSectionMeta } from '@/lib/sections';
+import { sanityClient } from '@/lib/sanity/fetch';
+import { SERVICES_QUERY } from '@/lib/sanity/queries';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+const [meta, services] = await Promise.all([
+  getSectionMeta('services', locale),
+  sanityClient.fetch(SERVICES_QUERY, { language: locale }),
+]);
+---
+
+<BaseLayout
+  title={meta.seo.title}
+  description={meta.seo.description}
+  image={meta.seo.image}
+  noindex={meta.seo.noindex}
+  locale={locale}
+  alternates={getRouteAlternates('services')}
+>
+  <PageHeader title={meta.title} intro={meta.intro} />
+
+  <Container class="services">
+    {services.length === 0 && <EmptyState locale={locale} />}
+    {
+      services.map((service) => (
+        <section id={service.slug ?? undefined} class="service" aria-labelledby={`service-${service.slug}`}>
+          {service.image?.asset && (
+            <SanityImage image={service.image} aspectRatio={4 / 3} sizes="(min-width: 60rem) 40vw, 100vw" />
+          )}
+          <div class="service-body">
+            <h2 id={`service-${service.slug}`}>{service.title}</h2>
+            <p class="lead">{service.summary}</p>
+            <RichText value={service.description} />
+            {service.relatedProjects.length > 0 && (
+              <div class="related">
+                <h3>{strings.services.relatedProjects}</h3>
+                <ul>
+                  {service.relatedProjects.map((project) => (
+                    <li>
+                      <a href={projectPath(locale, project.slug ?? '')}>{project.title}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <div>
+              <Button href={getRoutePath('contact', locale)}>{strings.services.contactCta}</Button>
+            </div>
+          </div>
+        </section>
+      ))
+    }
+  </Container>
+</BaseLayout>
+
+<style>
+  :global(.services) {
+    display: grid;
+    gap: var(--space-2xl);
+    padding-bottom: var(--space-2xl);
+  }
+
+  .service {
+    display: grid;
+    gap: var(--space-l);
+    align-items: start;
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--color-border);
+  }
+
+  @media (min-width: 60rem) {
+    .service:has(img) {
+      grid-template-columns: 2fr 3fr;
+    }
+  }
+
+  .service img {
+    border-radius: var(--radius-s);
+  }
+
+  .service-body {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .service h2 {
+    font-size: var(--text-2xl);
+  }
+
+  .related h3 {
+    margin-bottom: var(--space-2xs);
+    font-size: var(--text-lg);
+  }
+
+  .related ul {
+    padding-left: 1.1em;
+  }
+</style>

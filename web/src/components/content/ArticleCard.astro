@@ -1,0 +1,31 @@
+---
+import type { Locale } from '@/i18n/config';
+import { formatDate } from '@/lib/format';
+import { articlePath } from '@/lib/links';
+import type { ARTICLES_QUERY_RESULT } from '@/lib/sanity/sanity.types';
+import SanityImage from './SanityImage.astro';
+
+interface Props {
+  article: ARTICLES_QUERY_RESULT[number];
+  locale: Locale;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { article, locale, headingLevel: Heading = 'h2' } = Astro.props;
+const href = articlePath(locale, article.slug ?? '');
+const categories = (article.categories ?? []).flatMap((c) => (c?.title ? [c.title] : []));
+---
+
+<article class="card">
+  <SanityImage image={article.coverImage} aspectRatio={3 / 2} sizes="(min-width: 60rem) 33vw, (min-width: 40rem) 50vw, 100vw" alt="" />
+  <div class="body">
+    {categories.length > 0 && <p class="eyebrow">{categories.join(' · ')}</p>}
+    <Heading class="title"><a href={href}>{article.title}</a></Heading>
+    {article.publishedAt && (
+      <p class="meta">
+        <time datetime={article.publishedAt}>{formatDate(article.publishedAt, locale)}</time>
+      </p>
+    )}
+    <p>{article.excerpt}</p>
+  </div>
+</article>

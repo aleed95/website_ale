@@ -1,0 +1,21 @@
+{
+  "name": "naturalist-website",
+  "private": true,
+  "description": "Professional website for an independent naturalist \u2014 Astro (static) + Sanity CMS, hosted on Netlify.",
+  "workspaces": [
+    "web",
+    "studio"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace web",
+    "dev:studio": "npm run dev --workspace studio",
+    "build": "npm run build --workspace web",
+    "build:studio": "npm run build --workspace studio",
+    "check": "npm run check --workspace web && npm run typecheck --workspace studio",
+    "deploy:studio": "npm run deploy --workspace studio",
+    "typegen": "npm run typegen --workspace studio"
+  }
+}

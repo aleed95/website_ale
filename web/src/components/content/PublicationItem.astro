@@ -1,0 +1,76 @@
+---
+import type { Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import type { PUBLICATIONS_QUERY_RESULT } from '@/lib/sanity/sanity.types';
+
+interface Props {
+  publication: PUBLICATIONS_QUERY_RESULT[number];
+  locale: Locale;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { publication: p, locale, headingLevel: Heading = 'h3' } = Astro.props;
+const strings = t(locale).publications;
+const year = p.publishedAt?.slice(0, 4);
+const href = p.doi ? `https://doi.org/${p.doi}` : p.url;
+const type = p.publicationType ? strings.types[p.publicationType] : undefined;
+---
+
+<article class="publication">
+  <p class="eyebrow">
+    {[type, year].filter(Boolean).join(' · ')}
+  </p>
+  <Heading class="title">
+    {href ? <a href={href} rel="noopener">{p.title}</a> : <span>{p.title}</span>}
+  </Heading>
+  <p class="authors">{p.authors?.join(', ')}</p>
+  {(p.publisher || p.citationDetails) && (
+    <p class="source">
+      {p.publisher && <cite>{p.publisher}</cite>}
+      {p.citationDetails && <span> {p.citationDetails}</span>}
+    </p>
+  )}
+  {p.description && <p class="description">{p.description}</p>}
+  {p.doi && (
+    <p class="doi">
+      {strings.doi}: <a href={`https://doi.org/${p.doi}`} rel="noopener">{p.doi}</a>
+    </p>
+  )}
+</article>
+
+<style>
+  .publication {
+    display: grid;
+    gap: var(--space-3xs);
+    padding-block: var(--space-m);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .title {
+    font-size: var(--text-lg);
+  }
+
+  .title a {
+    color: var(--color-heading);
+    text-decoration: none;
+  }
+
+  .title a:hover {
+    text-decoration: underline;
+  }
+
+  .authors,
+  .source,
+  .doi {
+    font-size: var(--text-sm);
+  }
+
+  .source cite {
+    font-style: italic;
+  }
+
+  .description {
+    margin-top: var(--space-2xs);
+    max-width: var(--container-text);
+  }
+</style>

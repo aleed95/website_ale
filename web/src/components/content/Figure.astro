@@ -1,0 +1,52 @@
+---
+/** Image with optional caption and photo credit. */
+import type { SanityImageSource } from '@/lib/sanity/image';
+import SanityImage from './SanityImage.astro';
+
+interface Props {
+  image: SanityImageSource | null | undefined;
+  sizes?: string;
+  aspectRatio?: number;
+  priority?: boolean;
+  class?: string;
+}
+
+const { image, sizes, aspectRatio, priority, class: className } = Astro.props;
+const caption = image?.caption;
+const credit = image?.credit;
+---
+
+{
+  image?.asset && (
+    <figure class:list={['figure', className]}>
+      <SanityImage image={image} sizes={sizes} aspectRatio={aspectRatio} priority={priority} />
+      {(caption || credit) && (
+        <figcaption>
+          {caption}
+          {credit && <span class="credit">{credit}</span>}
+        </figcaption>
+      )}
+    </figure>
+  )
+}
+
+<style>
+  .figure {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .figure :global(img) {
+    border-radius: var(--radius-s);
+  }
+
+  figcaption {
+    font-size: var(--text-xs);
+    color: var(--color-text);
+  }
+
+  .credit {
+    margin-left: var(--space-2xs);
+    opacity: 0.8;
+  }
+</style>

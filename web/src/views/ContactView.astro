@@ -1,0 +1,110 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/ui/Container.astro';
+import PageHeader from '@/components/ui/PageHeader.astro';
+import { getRouteAlternates, type Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import { getSectionMeta } from '@/lib/sections';
+import { getSiteSettings } from '@/lib/sanity/fetch';
+import { socialLabel } from '@/lib/social';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+const [meta, settings] = await Promise.all([getSectionMeta('contact', locale), getSiteSettings(locale)]);
+const socialLinks = (settings?.socialLinks ?? []).filter((link) => link.url);
+---
+
+<BaseLayout
+  title={meta.seo.title}
+  description={meta.seo.description}
+  image={meta.seo.image}
+  noindex={meta.seo.noindex}
+  locale={locale}
+  alternates={getRouteAlternates('contact')}
+>
+  <PageHeader title={meta.title} intro={meta.intro} />
+
+  <Container class="contact">
+    <dl class="details">
+      {
+        settings?.email && (
+          <div>
+            <dt>{strings.contact.email}</dt>
+            <dd><a href={`mailto:${settings.email}`}>{settings.email}</a></dd>
+          </div>
+        )
+      }
+      {
+        settings?.phone && (
+          <div>
+            <dt>{strings.contact.phone}</dt>
+            <dd><a href={`tel:${settings.phone.replace(/[^\d+]/g, '')}`}>{settings.phone}</a></dd>
+          </div>
+        )
+      }
+      {
+        settings?.address && (
+          <div>
+            <dt>{strings.contact.address}</dt>
+            <dd class="address">{settings.address}</dd>
+          </div>
+        )
+      }
+      {
+        socialLinks.length > 0 && (
+          <div>
+            <dt>{strings.contact.social}</dt>
+            <dd>
+              <ul role="list">
+                {socialLinks.map((link) => (
+                  <li>
+                    <a href={link.url} rel="noopener me">{socialLabel(link)}</a>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        )
+      }
+    </dl>
+    {/* Contact form: Phase 3 (markup) and Phase 4 (Netlify Forms). */}
+  </Container>
+</BaseLayout>
+
+<style>
+  :global(.contact) {
+    padding-bottom: var(--space-2xl);
+  }
+
+  .details {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  dt {
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-heading-alt);
+  }
+
+  dd {
+    margin: var(--space-3xs) 0 0;
+    font-size: var(--text-lg);
+  }
+
+  .address {
+    white-space: pre-line;
+  }
+
+  dd ul {
+    display: grid;
+    gap: var(--space-3xs);
+    padding: 0;
+  }
+</style>

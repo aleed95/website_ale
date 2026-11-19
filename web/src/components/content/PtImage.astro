@@ -1,0 +1,17 @@
+---
+import type { Props as PortableTextProps } from 'astro-portabletext/types';
+import type { SanityImageSource } from '@/lib/sanity/image';
+import Figure from './Figure.astro';
+
+type Props = PortableTextProps<SanityImageSource & { _type: 'accessibleImage'; _key: string }>;
+
+const { node } = Astro.props;
+---
+
+<Figure image={node} sizes="(min-width: 46rem) 42rem, 100vw" class="pt-figure" />
+
+<style>
+  :global(.pt-figure) {
+    margin-block: var(--space-l);
+  }
+</style>

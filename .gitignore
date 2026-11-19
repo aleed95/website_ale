@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build output
+web/dist/
+web/.astro/
+studio/dist/
+studio/.sanity/
+
+# Environment variables (never commit secrets)
+.env
+.env.*
+!.env.example
+
+# Netlify
+.netlify/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.log
+
+# Local tooling
+.claude/
+studio/schema.json
+studio/seed/sample.ndjson

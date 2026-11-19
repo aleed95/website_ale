@@ -1,0 +1,89 @@
+---
+import '@/styles/global.css';
+import { Font } from 'astro:assets';
+import Seo from '@/components/layout/Seo.astro';
+import SiteHeader from '@/components/layout/SiteHeader.astro';
+import SiteFooter from '@/components/layout/SiteFooter.astro';
+import { localeTags, type Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import { getNavigation, getSiteSettings } from '@/lib/sanity/fetch';
+import { siteFallback } from '@/lib/site';
+
+interface Props {
+  title: string;
+  locale: Locale;
+  description?: string | undefined;
+  /** Path of this page in each language: drives hreflang and the language switcher. */
+  alternates?: Partial<Record<Locale, string>> | undefined;
+  image?: string | undefined;
+  imageAlt?: string | undefined;
+  noindex?: boolean | undefined;
+  ogType?: 'website' | 'article' | undefined;
+}
+
+const { title, locale, description, alternates, image, imageAlt, noindex, ogType } = Astro.props;
+
+const [settings, navigation] = await Promise.all([getSiteSettings(locale), getNavigation(locale)]);
+const siteName = settings?.siteName || siteFallback.name;
+const strings = t(locale);
+---
+
+<!doctype html>
+<html lang={localeTags[locale].lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+
+    <Font cssVariable="--font-geologica" preload />
+    <Font cssVariable="--font-fraunces" preload={[{ style: 'normal' }]} />
+
+    <Seo
+      title={title}
+      siteName={siteName}
+      locale={locale}
+      description={description ?? settings?.defaultSeoDescription ?? undefined}
+      alternates={alternates}
+      image={image}
+      imageAlt={imageAlt}
+      noindex={noindex}
+      ogType={ogType}
+    />
+    <slot name="head" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#fffaee" />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{strings.a11y.skipToContent}</a>
+    <SiteHeader locale={locale} siteName={siteName} alternates={alternates} navigation={navigation} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter locale={locale} siteName={siteName} settings={settings} navigation={navigation} />
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    top: var(--space-2xs);
+    left: var(--space-2xs);
+    z-index: 100;
+    padding: var(--space-2xs) var(--space-s);
+    background-color: var(--color-bg-inverse);
+    color: var(--color-text-inverse);
+    border-radius: var(--radius-s);
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus {
+    transform: none;
+  }
+
+  main:focus {
+    outline: none;
+  }
+</style>

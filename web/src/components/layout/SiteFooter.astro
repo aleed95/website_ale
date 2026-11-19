@@ -1,0 +1,205 @@
+---
+import LogotypePayoff from '@/assets/brand/logotipo-payoff-chiaro.svg';
+import { getRoutePath, routeKeys, type Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import Container from '@/components/ui/Container.astro';
+import { resolveNavLinks } from '@/lib/links';
+import { socialLabel } from '@/lib/social';
+import type { NAVIGATION_QUERY_RESULT, SITE_SETTINGS_QUERY_RESULT } from '@/lib/sanity/sanity.types';
+
+interface Props {
+  locale: Locale;
+  siteName: string;
+  settings: SITE_SETTINGS_QUERY_RESULT;
+  navigation: NAVIGATION_QUERY_RESULT;
+}
+
+const { locale, siteName, settings, navigation } = Astro.props;
+const strings = t(locale);
+const year = new Date().getFullYear();
+
+const cmsSections = resolveNavLinks(navigation?.mainMenu, locale);
+const sections =
+  cmsSections.length > 0
+    ? cmsSections
+    : routeKeys
+        .filter((key) => key !== 'home')
+        .map((key) => ({ key, href: getRoutePath(key, locale), label: strings.nav[key], external: false }));
+const legalLinks = resolveNavLinks(navigation?.footerLinks, locale);
+const socialLinks = (settings?.socialLinks ?? []).filter((link) => link.url);
+---
+
+<footer class="site-footer">
+  <Container class="grid">
+    <div class="identity">
+      {/* Brand manual: "Logotipo con payoff" for the site footer; light version on Charcoal Brown. */}
+      <a href={getRoutePath('home', locale)} class="brand">
+        <LogotypePayoff class="logo" aria-hidden="true" focusable="false" />
+        <span class="visually-hidden">{siteName} — {strings.a11y.homeLink}</span>
+      </a>
+      {navigation?.footerSummary && <p class="summary">{navigation.footerSummary}</p>}
+    </div>
+
+    <nav aria-label={strings.a11y.footerNavigation}>
+      <h2 class="title">{strings.footer.navigationTitle}</h2>
+      <ul role="list">
+        {
+          sections.map((item) => (
+            <li>
+              <a href={item.href} rel={item.external ? 'noopener' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="contact">
+      {
+        (settings?.email || settings?.phone) && (
+          <>
+            <h2 class="title">{strings.footer.contactTitle}</h2>
+            <ul role="list">
+              {settings?.email && (
+                <li>
+                  <a href={`mailto:${settings.email}`}>{settings.email}</a>
+                </li>
+              )}
+              {settings?.phone && (
+                <li>
+                  <a href={`tel:${settings.phone.replace(/[^\d+]/g, '')}`}>{settings.phone}</a>
+                </li>
+              )}
+            </ul>
+          </>
+        )
+      }
+      {
+        socialLinks.length > 0 && (
+          <>
+            <h2 class="title">{strings.footer.followTitle}</h2>
+            <ul role="list">
+              {socialLinks.map((link) => (
+                <li>
+                  <a href={link.url} rel="noopener me">
+                    {socialLabel(link)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </>
+        )
+      }
+    </div>
+  </Container>
+
+  <Container class="legal">
+    <p>
+      © {year} {siteName}. {strings.footer.allRightsReserved}
+      {settings?.vatNumber && <span class="vat">{strings.footer.vat} {settings.vatNumber}</span>}
+    </p>
+    {
+      legalLinks.length > 0 && (
+        <nav aria-label={strings.a11y.legalNavigation}>
+          <ul role="list" class="legal-links">
+            {legalLinks.map((link) => (
+              <li>
+                <a href={link.href} rel={link.external ? 'noopener' : undefined}>
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+  </Container>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: auto;
+    padding-block: var(--space-2xl) var(--space-l);
+    background-color: var(--color-bg-inverse);
+    color: var(--color-text-inverse);
+    font-size: var(--text-sm);
+  }
+
+  .site-footer a {
+    color: var(--color-text-inverse);
+  }
+
+  .site-footer :global(.grid) {
+    display: grid;
+    gap: var(--space-xl);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 48rem) {
+    .site-footer :global(.grid) {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+  }
+
+  .identity {
+    display: grid;
+    gap: var(--space-m);
+    align-content: start;
+  }
+
+  .brand {
+    display: inline-block;
+  }
+
+  .logo {
+    width: clamp(var(--logo-min-logotype-payoff), 30vw, 20rem);
+    height: auto;
+  }
+
+  .summary {
+    max-width: 32rem;
+  }
+
+  .title {
+    margin-bottom: var(--space-s);
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-text-inverse);
+  }
+
+  .contact .title:not(:first-child) {
+    margin-top: var(--space-l);
+  }
+
+  ul {
+    display: grid;
+    gap: var(--space-2xs);
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-footer :global(.legal) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-s);
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-m);
+    border-top: 1px solid color-mix(in srgb, var(--color-text-inverse) 20%, transparent);
+    font-size: var(--text-xs);
+  }
+
+  .vat {
+    margin-left: var(--space-xs);
+  }
+
+  .legal-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+  }
+</style>

@@ -1,0 +1,244 @@
+---
+import Logotype from '@/assets/brand/logotipo-verde.svg';
+import { getRoutePath, routeKeys, type Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import Container from '@/components/ui/Container.astro';
+import { resolveNavLinks } from '@/lib/links';
+import type { NAVIGATION_QUERY_RESULT } from '@/lib/sanity/sanity.types';
+
+interface Props {
+  locale: Locale;
+  siteName: string;
+  alternates?: Partial<Record<Locale, string>> | undefined;
+  navigation: NAVIGATION_QUERY_RESULT;
+}
+
+const { locale, siteName, alternates, navigation } = Astro.props;
+const strings = t(locale);
+
+// Menu edited in Sanity ("Navigazione e footer"); until it is filled in, the
+// standard sections are shown so the site is always navigable.
+const cmsItems = resolveNavLinks(navigation?.mainMenu, locale);
+const navItems =
+  cmsItems.length > 0
+    ? cmsItems
+    : routeKeys
+        .filter((key) => key !== 'home')
+        .map((key) => ({ key, href: getRoutePath(key, locale), label: strings.nav[key], external: false }));
+
+const currentPath = Astro.url.pathname;
+const homePath = getRoutePath('home', locale);
+const isCurrent = (href: string) =>
+  href === homePath ? currentPath === href : currentPath === href || currentPath.startsWith(href);
+---
+
+<header class="site-header">
+  <Container class="bar">
+    <a class="brand" href={getRoutePath('home', locale)}>
+      <Logotype class="logo" aria-hidden="true" focusable="false" />
+      <span class="visually-hidden">{siteName} — {strings.a11y.homeLink}</span>
+    </a>
+
+    <button
+      class="menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-menu"
+      data-label-open={strings.a11y.openMenu}
+      data-label-close={strings.a11y.closeMenu}
+    >
+      <span class="menu-icon" aria-hidden="true"></span>
+      <span class="visually-hidden" data-menu-label>{strings.a11y.openMenu}</span>
+    </button>
+
+    <div class="menu" id="site-menu">
+      <nav aria-label={strings.a11y.mainNavigation}>
+        <ul role="list" class="nav-list">
+          {
+            navItems.map((item) => (
+              <li>
+                {item.external ? (
+                  <a href={item.href} rel="noopener">
+                    {item.label}
+                  </a>
+                ) : (
+                  <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <LanguageSwitcher locale={locale} alternates={alternates} class="lang" />
+    </div>
+  </Container>
+</header>
+
+<script>
+  // Progressive enhancement: without JS the menu is always visible (see `html.js` rules).
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const menu = document.getElementById('site-menu');
+  const label = toggle?.querySelector<HTMLElement>('[data-menu-label]');
+
+  if (toggle && menu && label) {
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      label.textContent = (open ? toggle.dataset.labelClose : toggle.dataset.labelOpen) ?? '';
+      menu.toggleAttribute('data-open', open);
+    };
+
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    // Reset when switching to the desktop layout.
+    window.matchMedia('(min-width: 60rem)').addEventListener('change', (event) => {
+      if (event.matches) setOpen(false);
+    });
+  }
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: color-mix(in srgb, var(--color-bg) 94%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .site-header :global(.bar) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-xs) var(--space-l);
+    min-height: var(--header-height);
+  }
+
+  .brand {
+    display: inline-flex;
+    padding-block: var(--space-xs);
+  }
+
+  .logo {
+    width: clamp(var(--logo-min-logotype), 20vw, 15rem);
+    height: auto;
+  }
+
+  .menu {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs) var(--space-l);
+  }
+
+  .nav-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-m);
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav-list a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+  }
+
+  .nav-list a:hover {
+    border-bottom-color: var(--color-border);
+  }
+
+  .nav-list a[aria-current='page'] {
+    color: var(--color-heading-alt);
+    border-bottom-color: var(--color-accent);
+  }
+
+  .menu-toggle {
+    display: none;
+  }
+
+  /* ── Mobile: collapsible menu (only when JS is available) ── */
+  @media (max-width: 59.99rem) {
+    :global(html.js) .menu-toggle {
+      display: inline-grid;
+      place-items: center;
+      width: 2.75rem;
+      height: 2.75rem;
+      padding: 0;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-s);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .menu-icon,
+    .menu-icon::before,
+    .menu-icon::after {
+      display: block;
+      width: 1.25rem;
+      height: 2px;
+      background-color: var(--color-text);
+      transition: transform var(--duration-fast) var(--ease-out);
+    }
+
+    .menu-icon {
+      position: relative;
+    }
+
+    .menu-icon::before,
+    .menu-icon::after {
+      content: '';
+      position: absolute;
+      left: 0;
+    }
+
+    .menu-icon::before { top: -6px; }
+    .menu-icon::after { top: 6px; }
+
+    [aria-expanded='true'] .menu-icon { background-color: transparent; }
+    [aria-expanded='true'] .menu-icon::before { transform: translateY(6px) rotate(45deg); }
+    [aria-expanded='true'] .menu-icon::after { transform: translateY(-6px) rotate(-45deg); }
+
+    :global(html.js) .menu {
+      display: none;
+    }
+
+    :global(html.js) .menu[data-open] {
+      display: flex;
+    }
+
+    .menu {
+      flex-basis: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      padding-bottom: var(--space-m);
+    }
+
+    .nav-list {
+      flex-direction: column;
+    }
+
+    .nav-list a {
+      font-size: var(--text-lg);
+      font-family: var(--font-heading);
+      font-weight: var(--weight-regular);
+    }
+  }
+</style>
