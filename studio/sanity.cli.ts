@@ -18,5 +18,9 @@ export default defineCliConfig({
   },
   // Auto-updates off: the deployed Studio runs exactly the versions pinned in
   // package-lock.json, which are the ones tested with the plugins in use.
-  deployment: { autoUpdates: false },
+  deployment: {
+    // Hosted Studio: https://alessandrodini.sanity.studio (not secret).
+    appId: 'relwp50mzlkrys3m49pxdwhp',
+    autoUpdates: false,
+  },
 });
