@@ -11,9 +11,7 @@ const g = globalThis as Record<string, unknown>;
 g.Netlify = { env: { get: (key: string) => env[key] } };
 g.fetch = async (url: URL) => {
   fetched.push(String(url));
-  return new Response('<h1>In costruzione</h1>', {
-    headers: { 'x-frame-options': 'DENY', 'x-content-type-options': 'nosniff', 'cache-control': 'public,max-age=0' },
-  });
+  return new Response('<h1>In costruzione</h1>', { headers: { 'cache-control': 'public,max-age=0' } });
 };
 
 const { default: comingSoon, config } = await import('../netlify/edge-functions/coming-soon.ts');
@@ -52,11 +50,14 @@ test('visitors get the under-construction page with 503 and noindex', async () =
   assert.equal(response?.headers.get('retry-after'), '86400');
 });
 
-test('the 503 response keeps the static security headers but is not cached', async () => {
-  const response = await run('/');
-  assert.equal(response?.headers.get('x-frame-options'), 'DENY');
-  assert.equal(response?.headers.get('x-content-type-options'), 'nosniff');
-  assert.equal(response?.headers.get('cache-control'), 'no-store');
+test('responses created by the function carry the security headers', async () => {
+  for (const response of [await run('/'), await run('/robots.txt'), await run(`/?anteprima=${SECRET}`)]) {
+    assert.equal(response?.headers.get('x-frame-options'), 'DENY');
+    assert.equal(response?.headers.get('x-content-type-options'), 'nosniff');
+    assert.equal(response?.headers.get('referrer-policy'), 'strict-origin-when-cross-origin');
+    assert.equal(response?.headers.get('content-security-policy'), "frame-ancestors 'none'");
+  }
+  assert.equal((await run('/'))?.headers.get('cache-control'), 'no-store');
 });
 
 test('a wrong secret does not unlock', async () => {

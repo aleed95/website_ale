@@ -18,6 +18,23 @@ const PARAM = 'anteprima';
 const COMING_SOON_PATH = '/in-costruzione/';
 const THIRTY_DAYS = 60 * 60 * 24 * 30;
 
+/**
+ * Responses created here do not get the [[headers]] of netlify.toml, so the same
+ * security headers are set explicitly. Keep in sync with netlify.toml.
+ */
+const SECURITY_HEADERS: Record<string, string> = {
+  'Content-Security-Policy': "frame-ancestors 'none'",
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+};
+
+function withSecurityHeaders(headers: Headers): Headers {
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) headers.set(name, value);
+  return headers;
+}
+
 async function sha256(value: string): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
@@ -27,7 +44,9 @@ function redirectWithoutParam(url: URL, cookie: string): Response {
   url.searchParams.delete(PARAM);
   return new Response(null, {
     status: 302,
-    headers: { Location: `${url.pathname}${url.search}`, 'Set-Cookie': cookie, 'Cache-Control': 'no-store' },
+    headers: withSecurityHeaders(
+      new Headers({ Location: `${url.pathname}${url.search}`, 'Set-Cookie': cookie, 'Cache-Control': 'no-store' }),
+    ),
   });
 }
 
@@ -50,7 +69,9 @@ export default async function comingSoon(request: Request, context: Context): Pr
   // Robots must not crawl anything while the site is under construction.
   if (url.pathname === '/robots.txt') {
     return new Response('User-agent: *\nDisallow: /\n', {
-      headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' },
+      headers: withSecurityHeaders(
+        new Headers({ 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' }),
+      ),
     });
   }
 
@@ -63,9 +84,8 @@ export default async function comingSoon(request: Request, context: Context): Pr
   }
 
   // Everyone else: the under-construction page, with "temporarily unavailable" status.
-  // Start from the static page's headers so the security headers of netlify.toml are kept.
   const page = await fetch(new URL(COMING_SOON_PATH, url));
-  const headers = new Headers(page.headers);
+  const headers = withSecurityHeaders(new Headers(page.headers));
   headers.set('Content-Type', 'text/html; charset=utf-8');
   headers.set('Retry-After', '86400');
   headers.set('X-Robots-Tag', 'noindex, nofollow');
