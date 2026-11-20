@@ -1,5 +1,5 @@
 import { HomeIcon } from '@sanity/icons/Home';
-import { defineField, defineType } from 'sanity';
+import { defineArrayMember, defineField, defineType } from 'sanity';
 import { emphasisHint } from '../../lib/text';
 
 /**
@@ -15,6 +15,7 @@ export const homePage = defineType({
   groups: [
     { name: 'hero', title: 'Apertura', default: true },
     { name: 'sections', title: 'Sezioni' },
+    { name: 'identity', title: 'Ambiti, numeri e manifesto' },
     { name: 'seo', title: 'SEO' },
   ],
   fields: [
@@ -139,6 +140,71 @@ export const homePage = defineType({
       title: 'Invito al contatto — testo del bottone',
       type: 'string',
       group: 'sections',
+    }),
+    defineField({
+      name: 'pillarsTitle',
+      title: 'Ambiti — titolo grande',
+      type: 'string',
+      group: 'identity',
+      description: `Facoltativo. Fascia subito dopo l’apertura con i tre ambiti di lavoro. ${emphasisHint}`,
+    }),
+    defineField({
+      name: 'pillars',
+      title: 'Ambiti',
+      type: 'array',
+      group: 'identity',
+      description: 'Tre ambiti, come nel payoff: Scienza, Natura, Sostenibilità.',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'pillar',
+          title: 'Ambito',
+          fields: [
+            defineField({ name: 'title', title: 'Nome', type: 'string', validation: (rule) => rule.required() }),
+            defineField({ name: 'text', title: 'Testo', type: 'text', rows: 3, validation: (rule) => rule.required().max(260) }),
+          ],
+          preview: { select: { title: 'title', subtitle: 'text' } },
+        }),
+      ],
+      validation: (rule) => rule.max(3),
+    }),
+    defineField({
+      name: 'bandImage',
+      title: 'Foto a tutta larghezza',
+      type: 'accessibleImage',
+      group: 'identity',
+      description: 'Facoltativa. Grande foto orizzontale tra le sezioni (almeno 2400 px di larghezza). Didascalia e crediti compaiono sotto.',
+    }),
+    defineField({
+      name: 'numbers',
+      title: 'Numeri in evidenza',
+      type: 'array',
+      group: 'identity',
+      description: 'Facoltativi, massimo 4. Solo dati veri: es. "3–50" → "anni dei partecipanti, dal più piccolo al più grande".',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'highlight',
+          title: 'Numero',
+          fields: [
+            defineField({ name: 'value', title: 'Numero', type: 'string', validation: (rule) => rule.required().max(12) }),
+            defineField({ name: 'label', title: 'Descrizione', type: 'string', validation: (rule) => rule.required().max(90) }),
+          ],
+          preview: { select: { title: 'value', subtitle: 'label' } },
+        }),
+      ],
+      validation: (rule) => rule.max(4),
+    }),
+    defineField({
+      name: 'manifesto',
+      title: 'Manifesto',
+      type: 'object',
+      group: 'identity',
+      description: 'Facoltativo. Una frase in grande, su fondo scuro.',
+      fields: [
+        defineField({ name: 'quote', title: 'Frase', type: 'text', rows: 3, validation: (rule) => rule.max(280) }),
+        defineField({ name: 'attribution', title: 'Attribuzione', type: 'string', description: 'Es.: "Jane Goodall" oppure "La mia missione".' }),
+      ],
     }),
     defineField({ name: 'seo', title: 'SEO', type: 'seo', group: 'seo' }),
   ],

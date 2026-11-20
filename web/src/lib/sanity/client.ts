@@ -32,6 +32,7 @@ const STEGA_FIELDS = new Set([
   'title', 'summary', 'excerpt', 'intro', 'introduction', 'text', 'caption', 'credit',
   'heroEyebrow', 'heroTitle', 'heroText', 'introTitle', 'introText', 'ctaTitle', 'ctaText', 'ctaLabel',
   'servicesTitle', 'projectsTitle', 'articlesTitle', 'publicationsTitle',
+  'pillarsTitle', 'value', 'label', 'quote', 'attribution',
   'name', 'bio', 'description', 'organization', 'location', 'client', 'publisher', 'citationDetails',
   'formTitle', 'thanksTitle', 'thanksText', 'footerSummary', 'tagline', 'address', 'items', 'authors',
   'tags', 'it', 'en',

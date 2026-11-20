@@ -9,6 +9,8 @@ import ProjectCard from '@/components/content/ProjectCard.astro';
 import ArticleCard from '@/components/content/ArticleCard.astro';
 import PublicationItem from '@/components/content/PublicationItem.astro';
 import Pictogram from '@/assets/brand/pittogramma-verde-arancio.svg';
+import PictogramLight from '@/assets/brand/pittogramma-beige-arancio.svg';
+import Figure from '@/components/content/Figure.astro';
 import { getRouteAlternates, getRoutePath, type Locale } from '@/i18n/config';
 import { t } from '@/i18n/ui';
 import { buildSeo } from '@/lib/seo';
@@ -40,6 +42,9 @@ const featuredProjects = (page?.featuredProjects ?? []).filter((p) => p !== null
 const featuredPublications = (page?.featuredPublications ?? []).filter((p) => p !== null);
 const contactLabel = page?.ctaLabel || strings.nav.contact;
 const servicesPath = getRoutePath('services', locale);
+const pillars = page?.pillars ?? [];
+const numbers = page?.numbers ?? [];
+const manifesto = page?.manifesto?.quote ? page.manifesto : null;
 ---
 
 <BaseLayout
@@ -89,6 +94,32 @@ const servicesPath = getRoutePath('services', locale);
 
   <div id="esplora" class="anchor-target" tabindex="-1"></div>
 
+  {/* ── Three areas of work (brand payoff) ────────────────────────── */}
+  {
+    pillars.length > 0 && (
+      <section class="section section--alt pillars-section" aria-labelledby="pillars-title">
+        <Container>
+          <div class="pillars-heading reveal">
+            {/* Pictogram: recurring graphic element (brand manual p.03), ≥ 32px. */}
+            <Pictogram class="mark" aria-hidden="true" focusable="false" />
+            {settings?.tagline && <p class="eyebrow">{settings.tagline}</p>}
+            <h2 id="pillars-title">
+              <Emphasis text={page?.pillarsTitle || settings?.tagline || siteName} />
+            </h2>
+          </div>
+          <ol role="list" class="pillars">
+            {pillars.map((pillar) => (
+              <li class="pillar reveal">
+                <h3>{pillar.title}</h3>
+                <p>{pillar.text}</p>
+              </li>
+            ))}
+          </ol>
+        </Container>
+      </section>
+    )
+  }
+
   {/* ── Short introduction ────────────────────────────────────────── */}
   {
     (page?.introTitle || page?.introText) && (
@@ -116,7 +147,7 @@ const servicesPath = getRoutePath('services', locale);
   {/* ── Services overview ─────────────────────────────────────────── */}
   {
     services.length > 0 && (
-      <section class="section section--alt" aria-labelledby="services-title">
+      <section class="section" aria-labelledby="services-title">
         <Container>
           <SectionHeading id="services-title" label={strings.nav.services} title={page?.servicesTitle} href={servicesPath} linkLabel={strings.home.allServices} />
           <ol role="list" class="services">
@@ -135,6 +166,21 @@ const servicesPath = getRoutePath('services', locale);
             ))}
           </ol>
         </Container>
+      </section>
+    )
+  }
+
+  {/* ── Full-width photograph ─────────────────────────────────────── */}
+  {
+    page?.bandImage?.asset && (
+      <section class="band" aria-label={page.bandImage.caption || page.bandImage.alt || ''}>
+        <Figure
+          image={page.bandImage}
+          aspectRatio={21 / 9}
+          sizes="100vw"
+          class="band-figure"
+          edit={{ id: `homePage-${locale}`, type: 'homePage', path: 'bandImage' }}
+        />
       </section>
     )
   }
@@ -158,6 +204,36 @@ const servicesPath = getRoutePath('services', locale);
               </li>
             ))}
           </ul>
+        </Container>
+      </section>
+    )
+  }
+
+  {/* ── Numbers and manifesto (dark band) ────────────────────────── */}
+  {
+    (numbers.length > 0 || manifesto) && (
+      <section class="manifesto-band" aria-label={manifesto?.attribution || strings.nav.about}>
+        <Container class="manifesto-inner">
+          {numbers.length > 0 && (
+            <dl class="numbers">
+              {numbers.map((item) => (
+                <div class="number reveal">
+                  <dt>{item.label}</dt>
+                  <dd>{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {manifesto && (
+            <figure class="manifesto reveal">
+              {/* On Charcoal Brown: Cornsilk + Burnt Caramel version (brand manual p.08). */}
+              <PictogramLight class="mark" aria-hidden="true" focusable="false" />
+              <blockquote>
+                <p>{manifesto.quote}</p>
+              </blockquote>
+              {manifesto.attribution && <figcaption>{manifesto.attribution}</figcaption>}
+            </figure>
+          )}
         </Container>
       </section>
     )
@@ -405,24 +481,178 @@ const servicesPath = getRoutePath('services', locale);
     margin-top: var(--space-2xs);
   }
 
-  /* Services -------------------------------------------------------------- */
-  .services {
+  /* Pillars (three areas) ------------------------------------------------- */
+  .pillars-heading {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-s);
+    margin-bottom: var(--space-xl);
+    text-align: center;
+  }
+
+  .pillars-heading h2 {
+    max-width: 22ch;
+  }
+
+  /* Pictogram: min. 32px on screen; clear space ≈ 1/6 of its height (manual p.04). */
+  .mark {
+    width: 3.5rem;
+    height: auto;
+    margin-bottom: var(--space-2xs);
+  }
+
+  .pillars {
     display: grid;
     gap: var(--space-l);
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  }
+
+  @media (min-width: 48rem) {
+    .pillars {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+
+    .pillar + .pillar {
+      border-left: 1px solid var(--color-border);
+    }
+  }
+
+  .pillar {
+    display: grid;
+    gap: var(--space-xs);
+    align-content: start;
+    padding: var(--space-s) var(--space-l);
+    text-align: center;
+  }
+
+  .pillar h3 {
+    font-size: var(--text-2xl);
+    font-style: italic;
+    color: var(--color-heading-alt);
+  }
+
+  /* Services: occasional Dry Sage / Pale Sky cards (manual p.09) -------------- */
+  .services {
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
   }
 
   .service {
-    padding-top: var(--space-m);
-    border-top: 1px solid var(--color-border);
+    padding: var(--space-m);
+    border-radius: var(--radius-m);
+    background-color: var(--color-surface-sage);
   }
 
-  /* Large numerals in Fraunces (brand manual p.10); Burnt Caramel is allowed for large type. */
+  .service:nth-child(even) {
+    background-color: var(--color-surface-sky);
+  }
+
+  /* Large Fraunces numerals (manual p.10). On Dry Sage: Charcoal Brown (6.3:1);
+     on Pale Sky: Ebony (5.2:1) — Burnt Caramel would be too faint on both. */
   .service-number {
     font-family: var(--font-heading);
     font-size: var(--text-3xl);
     line-height: 1;
-    color: var(--color-accent);
+    color: var(--palette-charcoal-brown);
+  }
+
+  .service:nth-child(even) .service-number {
+    color: var(--palette-ebony);
+  }
+
+  .service :global(.title a),
+  .service p {
+    color: var(--palette-charcoal-brown);
+  }
+
+  /* Full-width photo band --------------------------------------------------- */
+  .band :global(.band-figure) {
+    gap: var(--space-xs);
+  }
+
+  .band :global(.band-figure img) {
+    max-height: 75vh;
+    object-fit: cover;
+    border-radius: 0;
+  }
+
+  .band :global(.band-figure figcaption) {
+    padding-inline: var(--gutter);
+    max-width: calc(var(--container-max) + 2 * var(--gutter));
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  /* Numbers + manifesto: Charcoal Brown band with Cornsilk text (12.7:1) ------ */
+  .manifesto-band {
+    padding-block: var(--space-2xl);
+    background-color: var(--color-bg-inverse);
+    color: var(--color-text-inverse);
+  }
+
+  .manifesto-band :global(.manifesto-inner) {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+
+  .numbers {
+    display: grid;
+    gap: var(--space-l);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  }
+
+  .number {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--space-2xs);
+    padding-top: var(--space-s);
+    border-top: 1px solid color-mix(in srgb, var(--color-text-inverse) 25%, transparent);
+  }
+
+  .number dd {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--text-4xl);
+    line-height: 1;
+    color: var(--color-text-inverse);
+  }
+
+  .number dt {
+    font-size: var(--text-sm);
+  }
+
+  .manifesto {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-m);
+    max-width: 48rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .manifesto blockquote p {
+    font-family: var(--font-heading);
+    font-size: var(--text-2xl);
+    font-style: italic;
+    line-height: var(--leading-snug);
+    color: var(--color-text-inverse);
+    text-wrap: balance;
+  }
+
+  .manifesto blockquote p::before {
+    content: '«';
+  }
+
+  .manifesto blockquote p::after {
+    content: '»';
+  }
+
+  .manifesto figcaption {
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
   }
 
   /* Publications ---------------------------------------------------------- */

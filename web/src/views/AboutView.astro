@@ -54,13 +54,14 @@ const timelines = [
   {
     bio && (
       <Container class="about-intro">
-        <p class="lead">{bio.introduction}</p>
+        <div class="about-text">
+          <p class="lead">{bio.introduction}</p>
+          <RichText value={bio.body} />
+        </div>
         <Figure image={bio.profileImage} aspectRatio={4 / 5} sizes="(min-width: 60rem) 40vw, 100vw" priority class="portrait" edit={{ id: `biography-${locale}`, type: 'biography', path: 'profileImage' }} />
       </Container>
     )
   }
-
-  {bio?.body && <Container class="about-body"><RichText value={bio.body} /></Container>}
 
   {
     timelines.map((timeline) => (
@@ -70,7 +71,9 @@ const timelines = [
           <ol role="list" class="timeline">
             {timeline.items.map((item) => (
               <li>
-                <p class="years">{formatYears(item.startYear, item.endYear, strings.common.present)}</p>
+                {(item.startYear || item.endYear) && (
+                  <p class="years">{formatYears(item.startYear, item.endYear, strings.common.present)}</p>
+                )}
                 <div>
                   <h3>{item.title}</h3>
                   {(item.organization || item.location) && (
@@ -142,8 +145,16 @@ const timelines = [
     }
   }
 
-  :global(.about-body) {
-    padding-bottom: var(--space-xl);
+  .about-text {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  @media (min-width: 60rem) {
+    :global(.about-intro .portrait) {
+      position: sticky;
+      top: calc(var(--header-height) + var(--space-m));
+    }
   }
 
   .section-title {
@@ -177,8 +188,9 @@ const timelines = [
     background-color: var(--color-accent);
   }
 
+  /* Dates column only when the entry has years. */
   @media (min-width: 48rem) {
-    .timeline li {
+    .timeline li:has(.years) {
       grid-template-columns: 9rem 1fr;
     }
   }
