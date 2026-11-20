@@ -109,6 +109,10 @@ domain the **primary domain**: canonical URLs and the sitemap follow it on the n
 
 ## Launch checklist
 
+- [ ] Remove the sample content shown during the preview (dry run first, then `--apply`):
+      `npm run seed:clean --workspace studio -- --dataset production`
+      Only documents still marked "[esempio]" / "[sample]" are deleted; single pages
+      (Home, Chi sono, Testi delle sezioni, Navigazione) are listed for rewriting instead.
 - [ ] Real content published in **production** for both languages: Impostazioni sito,
       Navigazione e footer, Home, Chi sono, Testi delle sezioni, Privacy policy page
       (and linked in *Impostazioni sito → Pagina della privacy policy*)

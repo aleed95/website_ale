@@ -78,14 +78,20 @@ const servicesPath = getRoutePath('services', locale);
           </Button>
         )}
       </div>
+      <a href="#esplora" class="scroll-cue">
+        {strings.common.discover}
+        <span class="scroll-cue-arrow" aria-hidden="true">↓</span>
+      </a>
     </div>
   </section>
+
+  <div id="esplora" class="anchor-target" tabindex="-1"></div>
 
   {/* ── Short introduction ────────────────────────────────────────── */}
   {
     (page?.introTitle || page?.introText) && (
       <section class="section" aria-labelledby="intro-title">
-        <Container class="intro">
+        <Container class="intro reveal">
           <div>
             <p class="eyebrow">{strings.nav.about}</p>
             <h2 id="intro-title">
@@ -203,7 +209,7 @@ const servicesPath = getRoutePath('services', locale);
     page?.ctaTitle && (
       <section class="section" aria-labelledby="cta-title">
         <Container>
-          <div class="cta">
+          <div class="cta reveal">
             <div class="cta-text">
               <h2 id="cta-title">
                 <Emphasis text={page.ctaTitle} />
@@ -227,11 +233,102 @@ const servicesPath = getRoutePath('services', locale);
     display: grid;
   }
 
+  .hero-media {
+    overflow: hidden;
+  }
+
   .hero-media :global(img),
   .hero-placeholder {
     width: 100%;
     aspect-ratio: 4 / 3;
     object-fit: cover;
+  }
+
+  /* Gentle parallax: the photo moves slower than the page while the hero scrolls away. */
+  @keyframes hero-parallax {
+    from {
+      transform: scale(1.08) translateY(0);
+    }
+    to {
+      transform: scale(1.08) translateY(7%);
+    }
+  }
+
+  @keyframes hero-text-out {
+    to {
+      opacity: 0.2;
+      transform: translateY(-2rem);
+    }
+  }
+
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .hero-media :global(img) {
+        animation-name: hero-parallax;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: scroll(root);
+        animation-range: 0 100vh;
+      }
+
+    }
+  }
+
+  /* Desktop only: on mobile the text sits below the photo and must stay readable. */
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) and (min-width: 60rem) {
+      .hero-text > :not(.scroll-cue) {
+        animation-name: hero-text-out;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: scroll(root);
+        animation-range: 10vh 90vh;
+      }
+    }
+  }
+
+  /* "Scopri ↓" — invitation to scroll to the first section. */
+  .scroll-cue {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    justify-self: start;
+    min-height: 2.75rem;
+    margin-top: var(--space-s);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-heading-alt);
+  }
+
+  .scroll-cue-arrow {
+    display: inline-block;
+    font-size: var(--text-base);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-cue-arrow {
+      animation: nudge 2.4s var(--ease-out) infinite;
+    }
+  }
+
+  @keyframes nudge {
+    0%, 60%, 100% {
+      transform: translateY(0);
+    }
+    30% {
+      transform: translateY(5px);
+    }
+  }
+
+  .anchor-target {
+    scroll-margin-top: var(--header-height);
+  }
+
+  .anchor-target:focus {
+    outline: none;
   }
 
   .hero-placeholder {

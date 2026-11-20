@@ -15,9 +15,12 @@ const add = (doc) => docs.push(doc);
 let keyCounter = 0;
 const key = () => `k${(keyCounter++).toString(36).padStart(4, '0')}`;
 
+// SEED_IMAGES_DIR: use other images with the same file names (e.g. real photos for a demo).
+const imagesDir = process.env.SEED_IMAGES_DIR ?? join(here, 'images');
+
 const image = (name, alt, extra = {}) => ({
   _type: 'accessibleImage',
-  _sanityAsset: `image@${pathToFileURL(join(here, 'images', `${name}.jpg`)).href}`,
+  _sanityAsset: `image@${pathToFileURL(join(imagesDir, `${name}.jpg`)).href}`,
   alt,
   ...extra,
 });

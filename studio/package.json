@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "schema:extract": "sanity schema extract --enforce-required-fields --path schema.json --force",
     "typegen": "npm run schema:extract && sanity typegen generate",
-    "seed": "node seed/build-sample.mjs && sanity dataset import seed/sample.ndjson --dataset development --replace"
+    "seed": "node seed/build-sample.mjs && sanity dataset import seed/sample.ndjson --dataset development --replace",
+    "seed:clean": "sanity exec seed/remove-sample.mjs --with-user-token --"
   },
   "dependencies": {
     "@sanity/document-internationalization": "^6.3.0",

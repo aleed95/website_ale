@@ -189,6 +189,8 @@ Useful scripts (run from the root):
 | `npm run deploy:studio` | Deploy the Studio to `<hostname>.sanity.studio` |
 | `npm run typegen` | Re-generate `web/src/lib/sanity/sanity.types.ts` from the schema and the GROQ queries |
 | `npm run seed --workspace studio` | Replace the `development` dataset with the sample content in `studio/seed/` |
+| `npm run seed:clean --workspace studio -- --dataset <name> [--apply]` | Remove the sample content still marked "[esempio]"/"[sample]" (dry run without `--apply`) |
+| `npm test` | Tests of the under-construction edge function |
 
 ### Working with content queries
 
