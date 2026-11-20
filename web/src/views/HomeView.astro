@@ -401,6 +401,14 @@ const manifesto = page?.manifesto?.quote ? page.manifesto : null;
       aspect-ratio: auto;
     }
 
+    /* Laptop widths: an even split, so the big title does not wrap after every word
+       and the hero (and its landscape photo) does not become a tall, narrow strip. */
+    @media (max-width: 80rem) {
+      .hero {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
     /* Align the text with the page container on wide screens. */
     .hero-text {
       padding-block: var(--space-2xl);
