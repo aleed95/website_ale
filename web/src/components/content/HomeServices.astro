@@ -1,0 +1,85 @@
+---
+/**
+ * Home "services" overview, used as a server island (`server:defer`): new or edited
+ * services appear without a deploy (CDN-cached for 5 minutes).
+ */
+import Container from '@/components/ui/Container.astro';
+import Emphasis from '@/components/ui/Emphasis.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { getRoutePath, type Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import { useSanity } from '@/lib/sanity/fetch';
+import { HOME_SERVICES_QUERY } from '@/lib/sanity/queries';
+
+interface Props {
+  locale: Locale;
+  title?: string | null | undefined;
+}
+
+const { locale, title } = Astro.props;
+const strings = t(locale);
+const servicesPath = getRoutePath('services', locale);
+const services = await useSanity(Astro.locals).client.fetch(HOME_SERVICES_QUERY, { language: locale });
+---
+
+{
+  services.length > 0 && (
+    <section class="section" aria-labelledby="services-title">
+      <Container>
+        <SectionHeading id="services-title" label={strings.nav.services} title={title} href={servicesPath} linkLabel={strings.home.allServices} />
+        <ol role="list" class="services">
+          {services.map((service, index) => (
+            <li class="card service">
+              <span class="service-number" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <h3 class="title">
+                <a href={`${servicesPath}#${service.slug}`}>
+                  <Emphasis text={service.title} />
+                </a>
+              </h3>
+              <p>{service.summary}</p>
+            </li>
+          ))}
+        </ol>
+      </Container>
+    </section>
+  )
+}
+
+<style>
+  /* Services: occasional Dry Sage / Pale Sky cards (manual p.09) -------------- */
+  .services {
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  }
+
+  .service {
+    padding: var(--space-m);
+    border-radius: var(--radius-m);
+    background-color: var(--color-surface-sage);
+  }
+
+  .service:nth-child(even) {
+    background-color: var(--color-surface-sky);
+  }
+
+  /* Large Fraunces numerals (manual p.10). On Dry Sage: Charcoal Brown (6.3:1);
+     on Pale Sky: Ebony (5.2:1) — Burnt Caramel would be too faint on both. */
+  .service-number {
+    font-family: var(--font-heading);
+    font-size: var(--text-3xl);
+    line-height: 1;
+    color: var(--palette-charcoal-brown);
+  }
+
+  .service:nth-child(even) .service-number {
+    color: var(--palette-ebony);
+  }
+
+  .service :global(.title a),
+  .service p {
+    color: var(--palette-charcoal-brown);
+  }
+</style>

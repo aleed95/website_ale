@@ -184,9 +184,14 @@ export const HOME_QUERY = defineQuery(`{
     ctaLabel,
     ${seoFields}
   },
-  "services": *[_type == "service" && language == $language && defined(slug.current)]
-    | order(order asc, title asc){ ${serviceCardFields} }
+  "hasServices": count(*[_type == "service" && language == $language && defined(slug.current)]) > 0
 }`);
+
+/** Home "services" island: the services overview. */
+export const HOME_SERVICES_QUERY = defineQuery(`
+  *[_type == "service" && language == $language && defined(slug.current)]
+    | order(order asc, title asc){ ${serviceCardFields} }
+`);
 
 // ─── About ───────────────────────────────────────────────────────────────────
 
