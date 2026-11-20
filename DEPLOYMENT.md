@@ -106,7 +106,8 @@ How the preview works: `/anteprima/*` pages are rendered on demand by a Netlify 
 `/api/anteprima/attiva/` with a one-time secret, validated with the read token; a cookie
 signed with `PREVIEW_SECRET` (SameSite=None, Partitioned, 8 h) then lets the framed site
 read drafts. Preview responses are `noindex`, `private, no-store`, and may be framed only
-by `https://alessandrodini.sanity.studio` and `http://localhost:3333`. Function usage costs
+by the Studio (`https://alessandrodini.sanity.studio`, also when opened inside the Sanity
+Dashboard on `https://www.sanity.io`) and `http://localhost:3333`. Function usage costs
 compute credits (fractions of a credit per page view), not deploys.
 
 Local preview: run `npm run dev` and `npm run dev:studio`, open the Studio's Anteprima tab

@@ -9,8 +9,11 @@ import { createPreviewClient } from '@/lib/sanity/client';
 import { createSanityContext } from '@/lib/sanity/fetch';
 import { isPreviewCookieValid, PREVIEW_COOKIE, PREVIEW_PREFIX, rewriteInternalLinks } from '@/lib/preview';
 
-/** Who may frame the preview: the hosted Studio and the local one. */
-const STUDIO_ORIGINS = 'https://alessandrodini.sanity.studio http://localhost:3333';
+/**
+ * Who may frame the preview. frame-ancestors checks every ancestor: the hosted Studio can
+ * itself run inside the Sanity Dashboard (www.sanity.io), so both must be allowed.
+ */
+const STUDIO_ORIGINS = 'https://alessandrodini.sanity.studio https://www.sanity.io https://sanity.io http://localhost:3333';
 
 export const onRequest = defineMiddleware(async (context, next) => {
   if (context.isPrerendered || !context.url.pathname.startsWith(`${PREVIEW_PREFIX}/`)) return next();
