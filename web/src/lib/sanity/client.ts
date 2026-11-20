@@ -38,6 +38,9 @@ const STEGA_FIELDS = new Set([
   'tags', 'it', 'en',
 ]);
 
+/** Link lists of the navigation document (header menu, footer links). */
+const NAVIGATION_LINK_FIELDS = new Set(['mainMenu', 'footerLinks']);
+
 export function createPreviewClient(): SanityClient {
   if (!SANITY_API_READ_TOKEN) {
     throw new Error('SANITY_API_READ_TOKEN is required for the preview (Viewer token).');
@@ -50,6 +53,9 @@ export function createPreviewClient(): SanityClient {
       enabled: true,
       studioUrl: STUDIO_URL,
       filter: (props) => {
+        // Menu links must stay clickable links: no click-to-edit overlay on them
+        // (their labels are edited in "Navigazione").
+        if (NAVIGATION_LINK_FIELDS.has(String(props.sourcePath[0]))) return false;
         const last = props.sourcePath.at(-1);
         const key = typeof last === 'number' ? props.sourcePath.at(-2) : last;
         return STEGA_FIELDS.has(String(key)) && props.filterDefault(props);
