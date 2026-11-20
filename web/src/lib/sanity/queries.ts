@@ -178,7 +178,6 @@ export const HOME_QUERY = defineQuery(`{
     projectsTitle,
     articlesTitle,
     publicationsTitle,
-    "featuredProjects": featuredProjects[]->{ ${projectCardFields} },
     "featuredPublications": featuredPublications[]->{ ${publicationFields} },
     ctaTitle,
     ctaText,
@@ -225,8 +224,7 @@ export const PROJECTS_QUERY = defineQuery(`
 `);
 
 /** Full projects of one language, used by getStaticPaths (one request for all pages). */
-export const PROJECT_PAGES_QUERY = defineQuery(`
-  *[_type == "project" && language == $language && defined(slug.current)]{
+const projectPageFields = /* groq */ `
     ${projectCardFields},
     body[]{ ${richTextFields} },
     gallery[]{
@@ -240,8 +238,24 @@ export const PROJECT_PAGES_QUERY = defineQuery(`
     "relatedServices": relatedServices[]->{ _id, title, "slug": slug.current },
     ${seoFields},
     ${translationFields}
-  }
+`;
+
+export const PROJECT_PAGES_QUERY = defineQuery(`
+  *[_type == "project" && language == $language && defined(slug.current)]{ ${projectPageFields} }
 `);
+
+/** One project, for the on-demand project page (new projects appear without a deploy). */
+export const PROJECT_QUERY = defineQuery(`
+  *[_type == "project" && language == $language && slug.current == $slug][0]{ ${projectPageFields} }
+`);
+
+/** Home "projects" island: the projects picked in the Home document, else the latest three. */
+export const HOME_PROJECTS_QUERY = defineQuery(`{
+  "title": *[_type == "homePage" && _id == "homePage-" + $language][0].projectsTitle,
+  "featured": *[_type == "homePage" && _id == "homePage-" + $language][0].featuredProjects[]->{ ${projectCardFields} },
+  "latest": *[_type == "project" && language == $language && defined(slug.current)]
+    | order(startDate desc)[0...3]{ ${projectCardFields} }
+}`);
 
 // ─── Articles ────────────────────────────────────────────────────────────────
 
@@ -278,9 +292,10 @@ export const LATEST_ARTICLES_QUERY = defineQuery(`
     | order(publishedAt desc)[0...3]{ ${articleCardFields} }
 `);
 
-/** Every published article URL, for the articles sitemap. */
-export const ARTICLE_URLS_QUERY = defineQuery(`
-  *[_type == "article" && defined(slug.current) && defined(language)] | order(publishedAt desc){
+/** Every published article and project URL, for the dynamic sitemap. */
+export const CONTENT_URLS_QUERY = defineQuery(`
+  *[_type in ["article", "project"] && defined(slug.current) && defined(language)] | order(_updatedAt desc){
+    _type,
     language,
     "slug": slug.current,
     "updatedAt": _updatedAt

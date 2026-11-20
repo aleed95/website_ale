@@ -29,9 +29,9 @@ Sanity Studio ──publish──▶ Sanity webhook ──▶ Netlify build hook
 - **No JavaScript framework on the website.** Astro components only; the only client JS is
   the ~0.5 KB mobile-menu script (plus the click-to-play video script on pages with
   videos). The click-to-edit overlay is loaded only on the `/anteprima/` preview pages.
-- **Static site + one function.** Public pages are prebuilt, except the articles (list,
-  pages, home "latest articles" server island, articles sitemap), which render on demand
-  with a 5-minute CDN cache so new articles go live without a deploy. The Studio preview
+- **Static site + one function.** Public pages are prebuilt, except articles and projects
+  (lists, pages, the two home server islands, `/sitemap-contenuti.xml`), which render on
+  demand with a 5-minute CDN cache so new content goes live without a deploy. The Studio preview
   (`/anteprima/*`, `/api/anteprima/*`) also runs on demand.
 - **Content is read at build time.** Visitors never call Sanity; no token reaches the
   browser.

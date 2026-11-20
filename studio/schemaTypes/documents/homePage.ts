@@ -91,6 +91,7 @@ export const homePage = defineType({
       title: 'Progetti in evidenza',
       type: 'array',
       group: 'sections',
+      description: 'Facoltativo. Se lo lasci vuoto, in home compaiono gli ultimi tre progetti. Le modifiche vanno online da sole.',
       of: [
         {
           type: 'reference',

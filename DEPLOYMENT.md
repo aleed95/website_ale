@@ -82,14 +82,15 @@ Netlify's credit-based Free plan includes **300 credits/month** and every produc
 deploy costs **15 credits** (~18 deploys/month once traffic is counted). The site is
 therefore **not** rebuilt automatically on every publish:
 
-- **Articles go online by themselves**: the articles list, article pages, the home-page
-  "latest articles" block (a server island) and `/sitemap-articles.xml` are rendered on
-  demand and cached on Netlify's CDN for 5 minutes. A published article is live within
-  ~5 minutes, with no deploy and no build credits.
+- **Articles and projects go online by themselves**: their lists and pages, the home-page
+  "projects" and "latest articles" blocks (server islands) and `/sitemap-contenuti.xml`
+  are rendered on demand and cached on Netlify's CDN for 5 minutes. Published content is
+  live within ~5 minutes, with no deploy and no build credits. (The services page lists
+  related projects at build time: it updates with the next deploy.)
 - The editor works in the Studio and sees every change — drafts included — in the
   **Anteprima** tab (live preview, click-to-edit). This uses no build.
 - The Studio is also reachable at **`/admin`** on the website (redirect), and its top bar
-  has a **Nuovo articolo** shortcut.
+  has **Nuovo articolo** and **Nuovo progetto** shortcuts.
 - When done, the editor opens **Aggiorna il sito** in the Studio and sends a request:
   the developer receives an e-mail (Netlify form `richiesta-aggiornamento`).
 - The developer publishes: *Netlify → Deploys → Trigger deploy → Deploy project*

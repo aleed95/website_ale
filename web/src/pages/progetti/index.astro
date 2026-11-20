@@ -1,5 +1,10 @@
 ---
-import ProjectsView from "@/views/ProjectsView.astro";
+/** Projects list, rendered on demand so new projects appear without a deploy. */
+import ProjectsView from '@/views/ProjectsView.astro';
+import { cacheOnCdn } from '@/lib/live';
+
+export const prerender = false;
+cacheOnCdn(Astro.response.headers);
 ---
 
 <ProjectsView locale="it" />

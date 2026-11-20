@@ -1,12 +1,17 @@
 ---
-import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+/** Project page, rendered on demand: new projects are online minutes after Publish. */
 import ProjectView from '@/views/ProjectView.astro';
-import { getProjectPaths } from '@/lib/paths';
+import NotFoundView from '@/views/NotFoundView.astro';
+import { cacheOnCdn } from '@/lib/live';
+import { useSanity } from '@/lib/sanity/fetch';
+import { PROJECT_QUERY } from '@/lib/sanity/queries';
 
-export const getStaticPaths = (() => getProjectPaths('it')) satisfies GetStaticPaths;
+export const prerender = false;
 
-type Props = InferGetStaticPropsType<typeof getStaticPaths>;
-const { project } = Astro.props as Props;
+const slug = Astro.params.slug ?? '';
+const project = await useSanity(Astro.locals).client.fetch(PROJECT_QUERY, { language: 'it', slug });
+if (project?.slug) cacheOnCdn(Astro.response.headers);
+else Astro.response.status = 404;
 ---
 
-<ProjectView locale="it" project={project} />
+{project?.slug ? <ProjectView locale="it" project={{ ...project, slug: project.slug }} /> : <NotFoundView />}

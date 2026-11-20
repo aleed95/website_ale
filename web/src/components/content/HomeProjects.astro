@@ -1,0 +1,46 @@
+---
+/**
+ * Home "projects" block, used as a server island (`server:defer`): shows the projects
+ * picked in the Home document, or the latest three, without a deploy.
+ */
+import Container from '@/components/ui/Container.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import ProjectCard from './ProjectCard.astro';
+import { getRoutePath, type Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import { useSanity } from '@/lib/sanity/fetch';
+import { HOME_PROJECTS_QUERY } from '@/lib/sanity/queries';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = t(locale);
+const { title, featured, latest } = await useSanity(Astro.locals).client.fetch(HOME_PROJECTS_QUERY, { language: locale });
+const picked = (featured ?? []).filter((project) => project !== null);
+const projects = picked.length > 0 ? picked : latest;
+---
+
+{
+  projects.length > 0 && (
+    <section class="section" aria-labelledby="projects-title">
+      <Container>
+        <SectionHeading
+          id="projects-title"
+          label={strings.nav.projects}
+          title={title}
+          href={getRoutePath('projects', locale)}
+          linkLabel={strings.home.allProjects}
+        />
+        <ul role="list" class="card-grid">
+          {projects.map((project) => (
+            <li>
+              <ProjectCard project={project} locale={locale} headingLevel="h3" />
+            </li>
+          ))}
+        </ul>
+      </Container>
+    </section>
+  )
+}
