@@ -47,11 +47,11 @@ export function RequestPublishTool() {
         </Heading>
         <Stack gap={3}>
           <Text>
-            <strong>Articoli e progetti</strong> vanno online da soli: pochi minuti dopo «Publish» sono sul sito, anche
-            in home.
+            <strong>Articoli, progetti e servizi</strong> vanno online da soli: pochi minuti dopo «Publish» sono sul sito,
+            anche in home.
           </Text>
           <Text>
-            Tutto il resto (testi della home, chi sono, servizi, pubblicazioni…) lo vedi subito nella scheda <strong>Anteprima</strong>, ma
+            Tutto il resto (testi della home, chi sono, pubblicazioni, impostazioni…) lo vedi subito nella scheda <strong>Anteprima</strong>, ma
             arriva sul sito pubblico solo quando lo sviluppatore lo aggiorna. Quando hai finito, mandagli una richiesta da
             qui.
           </Text>

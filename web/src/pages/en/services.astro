@@ -1,5 +1,10 @@
 ---
-import ServicesView from "@/views/ServicesView.astro";
+/** Services, rendered on demand (CDN-cached) so services and their related projects stay current. */
+import ServicesView from '@/views/ServicesView.astro';
+import { cacheOnCdn } from '@/lib/live';
+
+export const prerender = false;
+cacheOnCdn(Astro.response.headers);
 ---
 
 <ServicesView locale="en" />
