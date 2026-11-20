@@ -17,7 +17,9 @@ export function slugField(source = 'title') {
     name: 'slug',
     title: 'Indirizzo della pagina (slug)',
     type: 'slug',
-    description: 'La parte finale dell’indirizzo web. Premi "Generate" per crearlo dal titolo.',
+    // In "Contenuto", right under the title: without it the document cannot be published.
+    group: 'content',
+    description: 'L’ultima parte dell’indirizzo della pagina, es. …/articoli/la-vita-segreta-della-talpa. Dopo aver scritto il titolo premi "Generate" e si compila da solo.',
     options: { source, maxLength: 96, slugify, isUnique: isUniqueSlugPerLanguage },
     validation: (rule) => rule.required(),
   });

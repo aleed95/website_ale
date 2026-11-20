@@ -51,9 +51,10 @@ export default defineConfig({
     ...(import.meta.env.DEV ? [visionTool({ defaultApiVersion: '2026-11-01', title: 'Query (sviluppo)' })] : []),
   ],
 
-  // Content Releases (scheduling groups of changes) is not needed here and would only
-  // confuse the editor.
+  // Content Releases and Scheduled Drafts (scheduling changes) are not needed here and
+  // would only confuse the editor; they also push "Richiedi aggiornamento" into "⋯".
   releases: { enabled: false },
+  scheduledDrafts: { enabled: false },
 
   // Extra top-bar tool: ask the developer to publish the changes on the live site.
   // Top bar order: Tutti i contenuti, Nuovo articolo, Nuovo progetto, Modifica sul sito,
