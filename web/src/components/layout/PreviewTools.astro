@@ -11,7 +11,22 @@
   import '@sanity/visual-editing-standalone/styles.css';
   import { enableVisualEditing } from '@sanity/visual-editing-standalone';
 
+  // The Studio signals each saved change of the open document ("mutation") and clicks on
+  // its reload button ("manual"). Pages are server-rendered, so a reload shows the new
+  // draft; mutations are debounced so typing does not reload on every keystroke.
+  let reloadTimer: ReturnType<typeof setTimeout> | undefined;
+  const reloadSoon = (delay: number) => {
+    clearTimeout(reloadTimer);
+    reloadTimer = setTimeout(() => location.reload(), delay);
+    return new Promise<void>(() => {});
+  };
+
   enableVisualEditing({
+    refresh: (payload) => {
+      if (payload.source === 'manual') return reloadSoon(0);
+      if (payload.source === 'mutation') return reloadSoon(700);
+      return false;
+    },
     history: {
       subscribe: (navigate) => {
         const onPopState = () => navigate({ type: 'pop', url: location.href });
