@@ -24,7 +24,7 @@
   enableVisualEditing({
     refresh: (payload) => {
       if (payload.source === 'manual') return reloadSoon(0);
-      if (payload.source === 'mutation') return reloadSoon(700);
+      if (payload.source === 'mutation') return reloadSoon(300);
       return false;
     },
     history: {
