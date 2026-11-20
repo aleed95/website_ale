@@ -27,3 +27,4 @@ Thumbs.db
 .claude/
 studio/schema.json
 studio/seed/sample.ndjson
+.playwright-mcp/
