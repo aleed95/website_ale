@@ -4,6 +4,7 @@ import { PortableText } from 'astro-portabletext';
 import type { TypedObject } from 'astro-portabletext/types';
 import PtImage from './PtImage.astro';
 import PtLink from './PtLink.astro';
+import PtVideo from './PtVideo.astro';
 
 interface Props {
   value: TypedObject[] | null | undefined;
@@ -12,7 +13,7 @@ interface Props {
 
 const { value, class: className } = Astro.props;
 const components = {
-  type: { accessibleImage: PtImage },
+  type: { accessibleImage: PtImage, video: PtVideo },
   mark: { link: PtLink },
 };
 ---

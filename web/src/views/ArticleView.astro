@@ -11,7 +11,7 @@ import { formatDate } from '@/lib/format';
 import { articlePath, translationAlternates } from '@/lib/links';
 import type { ArticleDocument } from '@/lib/paths';
 import { buildSeo } from '@/lib/seo';
-import { getSiteSettings } from '@/lib/sanity/fetch';
+import { useSanity } from '@/lib/sanity/fetch';
 
 interface Props {
   locale: Locale;
@@ -19,8 +19,9 @@ interface Props {
 }
 
 const { locale, article } = Astro.props;
+const sanity = useSanity(Astro.locals);
 const strings = t(locale);
-const settings = await getSiteSettings(locale);
+const settings = await sanity.getSiteSettings(locale);
 const seo = buildSeo({
   title: article.title ?? '',
   seo: article.seo,
@@ -60,7 +61,7 @@ const tags = article.tags ?? [];
     </Container>
 
     <Container>
-      <Figure image={article.coverImage} sizes="(min-width: 76rem) 76rem, 100vw" priority />
+      <Figure image={article.coverImage} sizes="(min-width: 76rem) 76rem, 100vw" priority edit={{ id: article._id, type: 'article', path: 'coverImage' }} />
     </Container>
 
     <Container width="text" class="article-body">

@@ -7,7 +7,7 @@ import type { Locale } from '@/i18n/config';
 import { getPagePath, translationAlternates } from '@/lib/links';
 import type { PageDocument } from '@/lib/paths';
 import { buildSeo } from '@/lib/seo';
-import { getSiteSettings } from '@/lib/sanity/fetch';
+import { useSanity } from '@/lib/sanity/fetch';
 
 interface Props {
   locale: Locale;
@@ -15,7 +15,8 @@ interface Props {
 }
 
 const { locale, page } = Astro.props;
-const settings = await getSiteSettings(locale);
+const sanity = useSanity(Astro.locals);
+const settings = await sanity.getSiteSettings(locale);
 const seo = buildSeo({ title: page.title ?? '', seo: page.seo, settings });
 const alternates = translationAlternates(page.translations, { locale, slug: page.slug }, getPagePath);
 ---

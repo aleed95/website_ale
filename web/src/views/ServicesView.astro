@@ -11,7 +11,7 @@ import { getRouteAlternates, getRoutePath, type Locale } from '@/i18n/config';
 import { t } from '@/i18n/ui';
 import { projectPath } from '@/lib/links';
 import { getSectionMeta } from '@/lib/sections';
-import { sanityClient } from '@/lib/sanity/fetch';
+import { useSanity } from '@/lib/sanity/fetch';
 import { SERVICES_QUERY } from '@/lib/sanity/queries';
 
 interface Props {
@@ -19,10 +19,11 @@ interface Props {
 }
 
 const { locale } = Astro.props;
+const sanity = useSanity(Astro.locals);
 const strings = t(locale);
 const [meta, services] = await Promise.all([
-  getSectionMeta('services', locale),
-  sanityClient.fetch(SERVICES_QUERY, { language: locale }),
+  getSectionMeta(sanity, 'services', locale),
+  sanity.client.fetch(SERVICES_QUERY, { language: locale }),
 ]);
 ---
 
@@ -42,7 +43,7 @@ const [meta, services] = await Promise.all([
       services.map((service, index) => (
         <section id={service.slug ?? undefined} class="service" aria-labelledby={`service-${service.slug}`}>
           {service.image?.asset && (
-            <SanityImage image={service.image} aspectRatio={4 / 3} sizes="(min-width: 60rem) 40vw, 100vw" />
+            <SanityImage image={service.image} aspectRatio={4 / 3} sizes="(min-width: 60rem) 40vw, 100vw" edit={{ id: service._id, type: 'service', path: 'image' }} />
           )}
           <div class="service-body">
             <p class="service-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</p>

@@ -4,9 +4,10 @@ import { Font } from 'astro:assets';
 import Seo from '@/components/layout/Seo.astro';
 import SiteHeader from '@/components/layout/SiteHeader.astro';
 import SiteFooter from '@/components/layout/SiteFooter.astro';
+import PreviewTools from '@/components/layout/PreviewTools.astro';
 import { localeTags, type Locale } from '@/i18n/config';
 import { t } from '@/i18n/ui';
-import { getNavigation, getSiteSettings } from '@/lib/sanity/fetch';
+import { useSanity } from '@/lib/sanity/fetch';
 import { siteFallback } from '@/lib/site';
 
 interface Props {
@@ -22,8 +23,9 @@ interface Props {
 }
 
 const { title, locale, description, alternates, image, imageAlt, noindex, ogType } = Astro.props;
+const sanity = useSanity(Astro.locals);
 
-const [settings, navigation] = await Promise.all([getSiteSettings(locale), getNavigation(locale)]);
+const [settings, navigation] = await Promise.all([sanity.getSiteSettings(locale), sanity.getNavigation(locale)]);
 const siteName = settings?.siteName || siteFallback.name;
 const strings = t(locale);
 ---
@@ -64,6 +66,7 @@ const strings = t(locale);
       <slot />
     </main>
     <SiteFooter locale={locale} siteName={siteName} settings={settings} navigation={navigation} />
+    {sanity.preview && <PreviewTools />}
   </body>
 </html>
 

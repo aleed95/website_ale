@@ -45,5 +45,6 @@ export const blockContent = defineType({
       },
     }),
     defineArrayMember({ type: 'accessibleImage' }),
+    defineArrayMember({ type: 'video' }),
   ],
 });

@@ -8,6 +8,7 @@ import { navLink } from './objects/navLink';
 import { sectionIntro } from './objects/sectionIntro';
 import { seo } from './objects/seo';
 import { socialLink } from './objects/socialLink';
+import { video } from './objects/video';
 
 import { article } from './documents/article';
 import { author } from './documents/author';
@@ -40,6 +41,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   localeString,
   localeText,
   accessibleImage,
+  video,
   blockContent,
   seo,
   sectionIntro,

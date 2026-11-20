@@ -19,10 +19,21 @@ const imageFields = /* groq */ `
   asset->{ _id, url, metadata { lqip, dimensions { width, height } } }
 `;
 
-/** Rich text: dereference images inside Portable Text. */
+/** Video: YouTube/Vimeo link or uploaded file (with its CDN URL and type). */
+const videoFields = /* groq */ `
+  source,
+  url,
+  title,
+  caption,
+  "file": file.asset->{ url, mimeType },
+  poster { ${imageFields} }
+`;
+
+/** Rich text: dereference images and videos inside Portable Text. */
 const richTextFields = /* groq */ `
   ...,
-  _type == "accessibleImage" => { _type, _key, ${imageFields} }
+  _type == "accessibleImage" => { _type, _key, ${imageFields} },
+  _type == "video" => { _type, _key, ${videoFields} }
 `;
 
 const seoFields = /* groq */ `
@@ -210,7 +221,12 @@ export const PROJECT_PAGES_QUERY = defineQuery(`
   *[_type == "project" && language == $language && defined(slug.current)]{
     ${projectCardFields},
     body[]{ ${richTextFields} },
-    gallery[]{ _key, ${imageFields} },
+    gallery[]{
+      _key,
+      _type,
+      _type == "accessibleImage" => { ${imageFields} },
+      _type == "video" => { ${videoFields} }
+    },
     client,
     location,
     "relatedServices": relatedServices[]->{ _id, title, "slug": slug.current },

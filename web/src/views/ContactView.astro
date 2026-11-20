@@ -7,7 +7,7 @@ import { getRouteAlternates, type Locale } from '@/i18n/config';
 import { t } from '@/i18n/ui';
 import { getPagePath } from '@/lib/links';
 import { getSectionMeta } from '@/lib/sections';
-import { getSectionPages, getSiteSettings } from '@/lib/sanity/fetch';
+import { useSanity } from '@/lib/sanity/fetch';
 import { socialLabel } from '@/lib/social';
 
 interface Props {
@@ -15,11 +15,12 @@ interface Props {
 }
 
 const { locale } = Astro.props;
+const sanity = useSanity(Astro.locals);
 const strings = t(locale);
 const [meta, settings, sections] = await Promise.all([
-  getSectionMeta('contact', locale),
-  getSiteSettings(locale),
-  getSectionPages(locale),
+  getSectionMeta(sanity, 'contact', locale),
+  sanity.getSiteSettings(locale),
+  sanity.getSectionPages(locale),
 ]);
 const socialLinks = (settings?.socialLinks ?? []).filter((link) => link.url);
 const privacyHref = settings?.privacyPageSlug ? getPagePath(locale, settings.privacyPageSlug) : undefined;

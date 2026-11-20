@@ -6,7 +6,7 @@ import EmptyState from '@/components/ui/EmptyState.astro';
 import ProjectCard from '@/components/content/ProjectCard.astro';
 import { getRouteAlternates, type Locale } from '@/i18n/config';
 import { getSectionMeta } from '@/lib/sections';
-import { sanityClient } from '@/lib/sanity/fetch';
+import { useSanity } from '@/lib/sanity/fetch';
 import { PROJECTS_QUERY } from '@/lib/sanity/queries';
 
 interface Props {
@@ -14,9 +14,10 @@ interface Props {
 }
 
 const { locale } = Astro.props;
+const sanity = useSanity(Astro.locals);
 const [meta, projects] = await Promise.all([
-  getSectionMeta('projects', locale),
-  sanityClient.fetch(PROJECTS_QUERY, { language: locale }),
+  getSectionMeta(sanity, 'projects', locale),
+  sanity.client.fetch(PROJECTS_QUERY, { language: locale }),
 ]);
 ---
 

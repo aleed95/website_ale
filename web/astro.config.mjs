@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig, envField, fontProviders } from 'astro/config';
+import netlify from '@astrojs/netlify';
 import sitemap from '@astrojs/sitemap';
 import sitemapNoindex from './integrations/sitemap-noindex.mjs';
 
@@ -9,7 +10,10 @@ const site = process.env.SITE_URL ?? process.env.URL ?? 'http://localhost:4321';
 
 export default defineConfig({
   site,
+  // Static site; only the /anteprima/ preview and its API routes render on demand
+  // (Netlify Functions, via the adapter).
   output: 'static',
+  adapter: netlify({ edgeMiddleware: false, cacheOnDemandPages: false, imageCDN: false }),
   trailingSlash: 'always',
 
   // Content Security Policy as a <meta> tag: Astro adds hashes for its own scripts and
@@ -20,7 +24,9 @@ export default defineConfig({
         "default-src 'self'",
         "img-src 'self' https://cdn.sanity.io data:",
         "font-src 'self'",
-        "connect-src 'self'",
+        // Videos: uploaded files from the Sanity CDN, links played via privacy-friendly embeds.
+        "media-src 'self' https://cdn.sanity.io",
+        "frame-src https://www.youtube-nocookie.com https://player.vimeo.com",
         "form-action 'self'",
         "base-uri 'self'",
         "object-src 'none'",
@@ -72,12 +78,14 @@ export default defineConfig({
       SANITY_DATASET: envField.string({ context: 'server', access: 'public', default: 'production' }),
       SANITY_API_VERSION: envField.string({ context: 'server', access: 'public', default: '2026-11-01' }),
       SANITY_API_READ_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
+      // Shared with the under-construction edge function; also signs the preview cookie.
+      PREVIEW_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
 
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/404'),
+      filter: (page) => !page.includes('/404') && !page.includes('/anteprima/') && !page.includes('/richiesta-aggiornamento/'),
     }),
     // Must come after sitemap(): prunes pages marked noindex in Sanity.
     sitemapNoindex(),

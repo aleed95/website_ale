@@ -1,0 +1,69 @@
+---
+/**
+ * Live preview of drafts for the Studio's Presentation tool, rendered on demand.
+ * Reachable only with the preview cookie (see middleware.ts and /api/anteprima/attiva).
+ * Renders the very same views as the public static site.
+ */
+import HomeView from '@/views/HomeView.astro';
+import AboutView from '@/views/AboutView.astro';
+import ServicesView from '@/views/ServicesView.astro';
+import ProjectsView from '@/views/ProjectsView.astro';
+import ProjectView from '@/views/ProjectView.astro';
+import PublicationsView from '@/views/PublicationsView.astro';
+import ArticlesView from '@/views/ArticlesView.astro';
+import ArticleView from '@/views/ArticleView.astro';
+import ContactView from '@/views/ContactView.astro';
+import ContactThanksView from '@/views/ContactThanksView.astro';
+import PageView from '@/views/PageView.astro';
+import { resolvePreviewPath } from '@/lib/preview-routes';
+import { useSanity } from '@/lib/sanity/fetch';
+import { ARTICLE_PAGES_QUERY, PAGE_PAGES_QUERY, PROJECT_PAGES_QUERY } from '@/lib/sanity/queries';
+
+export const prerender = false;
+
+const sanity = useSanity(Astro.locals);
+if (!sanity.preview) {
+  return new Response("Anteprima non attiva: aprila dalla scheda «Anteprima» dello Studio.", {
+    status: 401,
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+  });
+}
+
+const target = resolvePreviewPath(Astro.params.path ?? '');
+if (!target) return new Response('Pagina non trovata', { status: 404 });
+
+const findBySlug = <T extends { slug: string | null }>(items: T[], slug: string) =>
+  items.find((item): item is T & { slug: string } => item.slug === slug);
+
+const project =
+  target.kind === 'project'
+    ? findBySlug(await sanity.client.fetch(PROJECT_PAGES_QUERY, { language: target.locale }), target.slug)
+    : undefined;
+const article =
+  target.kind === 'article'
+    ? findBySlug(await sanity.client.fetch(ARTICLE_PAGES_QUERY, { language: target.locale }), target.slug)
+    : undefined;
+const page =
+  target.kind === 'page'
+    ? findBySlug(await sanity.client.fetch(PAGE_PAGES_QUERY, { language: target.locale }), target.slug)
+    : undefined;
+
+if ((target.kind === 'project' && !project) || (target.kind === 'article' && !article) || (target.kind === 'page' && !page)) {
+  return new Response('Contenuto non trovato', { status: 404 });
+}
+
+const locale = target.locale;
+const key = target.kind === 'section' ? target.key : null;
+---
+
+{key === 'home' && <HomeView locale={locale} />}
+{key === 'about' && <AboutView locale={locale} />}
+{key === 'services' && <ServicesView locale={locale} />}
+{key === 'projects' && <ProjectsView locale={locale} />}
+{key === 'publications' && <PublicationsView locale={locale} />}
+{key === 'articles' && <ArticlesView locale={locale} />}
+{key === 'contact' && <ContactView locale={locale} />}
+{target.kind === 'thanks' && <ContactThanksView locale={locale} />}
+{project && <ProjectView locale={locale} project={project} />}
+{article && <ArticleView locale={locale} article={article} />}
+{page && <PageView locale={locale} page={page} />}

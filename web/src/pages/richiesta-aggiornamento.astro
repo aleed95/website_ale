@@ -1,0 +1,32 @@
+---
+/**
+ * Technical page, not linked anywhere and not indexed: it only declares the Netlify form
+ * "richiesta-aggiornamento", used by the Studio button "Chiedi di aggiornare il sito".
+ * Netlify detects forms in the built HTML; submissions trigger an e-mail to the developer
+ * (Netlify → Forms → richiesta-aggiornamento → notifications).
+ */
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Richiesta di aggiornamento del sito</title>
+  </head>
+  <body>
+    <main>
+      <h1>Richiesta di aggiornamento del sito</h1>
+      <p>Questo modulo si usa dallo Studio (Aggiorna il sito).</p>
+      <form name="richiesta-aggiornamento" method="POST" data-netlify="true" netlify-honeypot="company">
+        <input type="hidden" name="form-name" value="richiesta-aggiornamento" />
+        <p hidden><label>Non compilare <input name="company" /></label></p>
+        <p><label>Autore <input name="autore" /></label></p>
+        <p><label>Email autore <input type="email" name="email-autore" /></label></p>
+        <p><label>Cosa è cambiato <textarea name="messaggio"></textarea></label></p>
+        <p><button type="submit">Invia</button></p>
+      </form>
+    </main>
+  </body>
+</html>

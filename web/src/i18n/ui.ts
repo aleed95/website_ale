@@ -65,6 +65,10 @@ interface UiStrings {
     gallery: string;
     relatedServices: string;
   };
+  video: {
+    play: string;
+    watchOn: string;
+  };
   articles: {
     publishedOn: string;
     by: string;
@@ -171,6 +175,10 @@ export const ui: Record<Locale, UiStrings> = {
       category: 'Categoria',
       gallery: 'Galleria',
       relatedServices: 'Servizi collegati',
+    },
+    video: {
+      play: 'Riproduci il video',
+      watchOn: 'Guarda il video su',
     },
     articles: {
       publishedOn: 'Pubblicato il',
@@ -284,6 +292,10 @@ export const ui: Record<Locale, UiStrings> = {
       category: 'Category',
       gallery: 'Gallery',
       relatedServices: 'Related services',
+    },
+    video: {
+      play: 'Play video',
+      watchOn: 'Watch the video on',
     },
     articles: {
       publishedOn: 'Published on',

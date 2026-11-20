@@ -5,8 +5,8 @@ How the website and the Studio go online, and how they stay up to date.
 ```
 push to main ───────────────┐
                             ▼
-Sanity "Publish" ──webhook──▶ Netlify build hook ──▶ npm run build ──▶ CDN
-                                                      (reads Sanity at build time)
+Studio "Aggiorna il sito" ──e-mail──▶ developer ──Trigger deploy──▶ npm run build ──▶ CDN
+Studio "Anteprima" tab ──▶ /anteprima/* (Netlify Function, drafts, never cached)
 Sanity Studio ──npm run deploy:studio──▶ https://<hostname>.sanity.studio
 ```
 
@@ -15,6 +15,8 @@ Sanity Studio ──npm run deploy:studio──▶ https://<hostname>.sanity.stu
 | Website | Netlify, from GitHub `main` | [`netlify.toml`](netlify.toml) |
 | Under-construction mode | Netlify Edge Function | [`netlify/edge-functions/coming-soon.ts`](netlify/edge-functions/coming-soon.ts) |
 | Contact form | Netlify Forms (form `contact`) | [`ContactForm.astro`](web/src/components/content/ContactForm.astro) |
+| Studio preview (drafts, click-to-edit) | Netlify Function via `@astrojs/netlify` | [`web/src/pages/anteprima/[...path].astro`](web/src/pages/anteprima/%5B...path%5D.astro), [`web/src/middleware.ts`](web/src/middleware.ts) |
+| "Aggiorna il sito" request | Netlify Forms (form `richiesta-aggiornamento`) | [`studio/tools/RequestPublishTool.tsx`](studio/tools/RequestPublishTool.tsx) |
 | Studio | Sanity hosting | [`studio/sanity.cli.ts`](studio/sanity.cli.ts) |
 
 ---
@@ -74,23 +76,42 @@ secret link only with people who should preview the site.
 Submissions only work on Netlify (not on `npm run dev`). While `COMING_SOON=true`, test the
 form from a browser unlocked with the secret link.
 
-## 4. Rebuild when content is published (Sanity → Netlify)
+## 4. Publishing content (manual rebuild) and the Studio preview
 
-1. Netlify: *Project configuration → Build & deploy → Build hooks → Add build hook* —
-   name `Sanity publish`, branch `main`. Copy the URL (treat it as a secret).
-2. Sanity: <https://www.sanity.io/manage> → project → **API → Webhooks → Create webhook**:
-   - Name: `Netlify build`
-   - URL: the build hook URL
-   - Dataset: `production`
-   - Trigger on: **Create, Update, Delete**
-   - Filter and projection: empty (drafts never trigger webhooks; only published changes)
-   - HTTP method: `POST`
-   - Enabled
-3. Publish any change in the Studio and check *Netlify → Deploys*: a build "triggered by
-   Sanity publish" starts within seconds and takes about a minute.
+Netlify's credit-based Free plan includes **300 credits/month** and every production
+deploy costs **15 credits** (~18 deploys/month once traffic is counted). The site is
+therefore **not** rebuilt automatically on every publish:
 
-Several publishes in a row queue builds; Netlify runs them one after another. The free
-plan includes 300 build minutes/month (about 300 publishes).
+- The editor works in the Studio and sees every change — drafts included — in the
+  **Anteprima** tab (live preview, click-to-edit). This uses no build.
+- When done, the editor opens **Aggiorna il sito** in the Studio and sends a request:
+  the developer receives an e-mail (Netlify form `richiesta-aggiornamento`).
+- The developer publishes: *Netlify → Deploys → Trigger deploy → Deploy project*
+  (or `curl -X POST -d '{}' <build hook URL>`).
+
+One-time setup:
+
+1. **Read token** — sanity.io/manage → API → Tokens: a token with role **Viewer**
+   ("Anteprima sito"). Add it on Netlify as `SANITY_API_READ_TOKEN` (secret) and locally
+   in `web/.env`.
+2. **`PREVIEW_SECRET`** on Netlify (already used by the under-construction mode) also
+   signs the preview cookie. Scope must include **Functions** and **Edge Functions**.
+3. **Notification** — after the first deploy, *Forms → richiesta-aggiornamento → Form
+   notifications → Email notification* to the developer's address.
+4. The Sanity webhook "Netlify build" stays **disabled** (sanity.io/manage → API →
+   Webhooks). Re-enable it only on a paid plan, to rebuild on every publish.
+
+How the preview works: `/anteprima/*` pages are rendered on demand by a Netlify Function
+(`@astrojs/netlify` adapter; the rest of the site stays static). The Studio opens
+`/api/anteprima/attiva/` with a one-time secret, validated with the read token; a cookie
+signed with `PREVIEW_SECRET` (SameSite=None, Partitioned, 8 h) then lets the framed site
+read drafts. Preview responses are `noindex`, `private, no-store`, and may be framed only
+by `https://alessandrodini.sanity.studio` and `http://localhost:3333`. Function usage costs
+compute credits (fractions of a credit per page view), not deploys.
+
+Local preview: run `npm run dev` and `npm run dev:studio`, open the Studio's Anteprima tab
+(`studio/.env.development` points it to `http://localhost:4321`; `http://localhost:3333`
+must be a CORS origin with credentials in sanity.io/manage).
 
 ## 5. Sanity Studio
 
@@ -117,7 +138,7 @@ domain the **primary domain**: canonical URLs and the sitemap follow it on the n
       Navigazione e footer, Home, Chi sono, Testi delle sezioni, Privacy policy page
       (and linked in *Impostazioni sito → Pagina della privacy policy*)
 - [ ] Form detection on, email notification set, one test submission received
-- [ ] Sanity webhook triggers a Netlify build
+- [ ] Preview works from the Studio's Anteprima tab; "Aggiorna il sito" e-mail received
 - [ ] Custom domain connected and primary, HTTPS active
 - [ ] `COMING_SOON=false` + new deploy
 - [ ] Check `https://<domain>/robots.txt` and `/sitemap-index.xml`; submit the sitemap in

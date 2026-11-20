@@ -18,7 +18,7 @@ const categories = (article.categories ?? []).flatMap((c) => (c?.title ? [c.titl
 ---
 
 <article class="card">
-  <div class="media"><SanityImage image={article.coverImage} aspectRatio={3 / 2} sizes="(min-width: 60rem) 33vw, (min-width: 40rem) 50vw, 100vw" alt="" /></div>
+  <div class="media"><SanityImage image={article.coverImage} aspectRatio={3 / 2} sizes="(min-width: 60rem) 33vw, (min-width: 40rem) 50vw, 100vw" alt="" edit={{ id: article._id, type: 'article', path: 'coverImage' }} /></div>
   <div class="body">
     {categories.length > 0 && <p class="eyebrow">{categories.join(' · ')}</p>}
     <Heading class="title"><a href={href}><Emphasis text={article.title} /></a></Heading>

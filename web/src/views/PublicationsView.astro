@@ -6,7 +6,7 @@ import EmptyState from '@/components/ui/EmptyState.astro';
 import PublicationItem from '@/components/content/PublicationItem.astro';
 import { getRouteAlternates, type Locale } from '@/i18n/config';
 import { getSectionMeta } from '@/lib/sections';
-import { sanityClient } from '@/lib/sanity/fetch';
+import { useSanity } from '@/lib/sanity/fetch';
 import { PUBLICATIONS_QUERY } from '@/lib/sanity/queries';
 
 interface Props {
@@ -14,9 +14,10 @@ interface Props {
 }
 
 const { locale } = Astro.props;
+const sanity = useSanity(Astro.locals);
 const [meta, publications] = await Promise.all([
-  getSectionMeta('publications', locale),
-  sanityClient.fetch(PUBLICATIONS_QUERY, { language: locale }),
+  getSectionMeta(sanity, 'publications', locale),
+  sanity.client.fetch(PUBLICATIONS_QUERY, { language: locale }),
 ]);
 
 // Grouped by year, newest first.

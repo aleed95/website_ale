@@ -1,0 +1,167 @@
+---
+/**
+ * Video from Sanity.
+ * - Link (YouTube/Vimeo): shows the poster and a play button; the third-party player
+ *   (and its cookies) loads only after a click. Without JavaScript it is a plain link.
+ * - File: native <video>, nothing downloaded until the visitor presses play.
+ */
+import type { SanityImageSource } from '@/lib/sanity/image';
+import { urlFor, hasImage } from '@/lib/sanity/image';
+import { videoEmbed } from '@/lib/video';
+import { t } from '@/i18n/ui';
+import { isLocale, defaultLocale } from '@/i18n/config';
+import SanityImage from './SanityImage.astro';
+
+interface Props {
+  video: {
+    source?: string | null;
+    url?: string | null;
+    title?: string | null;
+    caption?: string | null;
+    file?: { url?: string | null; mimeType?: string | null } | null;
+    poster?: SanityImageSource | null;
+  };
+  sizes?: string;
+  class?: string;
+}
+
+const { video, sizes = '(min-width: 46rem) 42rem, 100vw', class: className } = Astro.props;
+const locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : defaultLocale;
+const strings = t(locale).video;
+const title = video.title ?? '';
+const embed = video.source === 'link' ? videoEmbed(video.url) : null;
+const fileUrl = video.source === 'file' ? video.file?.url : null;
+const posterUrl = hasImage(video.poster) ? urlFor(video.poster).width(1280).auto('format').url() : undefined;
+---
+
+{
+  (embed || fileUrl) && (
+    <figure class:list={['video', className]}>
+      {embed && (
+        <div class="frame" data-video-embed={embed.embedUrl} data-video-title={title}>
+          {video.poster?.asset ? (
+            <SanityImage image={video.poster} aspectRatio={16 / 9} sizes={sizes} alt="" />
+          ) : (
+            <div class="placeholder" aria-hidden="true" />
+          )}
+          <a class="play" href={video.url ?? '#'} rel="noopener">
+            <span class="play-icon" aria-hidden="true">▶</span>
+            <span class="play-label">
+              {strings.play}<span class="visually-hidden">: {title}</span>
+            </span>
+          </a>
+        </div>
+      )}
+      {fileUrl && (
+        <video class="frame" controls preload="none" playsinline poster={posterUrl} title={title}>
+          <source src={fileUrl} type={video.file?.mimeType ?? 'video/mp4'} />
+          <a href={fileUrl}>{title}</a>
+        </video>
+      )}
+      {(video.caption || embed) && (
+        <figcaption>
+          {video.caption}
+          {embed && (
+            <span class="source">
+              {strings.watchOn} <a href={video.url ?? '#'} rel="noopener">{embed.provider}</a>
+            </span>
+          )}
+        </figcaption>
+      )}
+    </figure>
+  )
+}
+
+<script>
+  // Replace the poster with the real player only when the visitor asks for it.
+  for (const frame of document.querySelectorAll<HTMLElement>('[data-video-embed]')) {
+    frame.querySelector('.play')?.addEventListener('click', (event) => {
+      event.preventDefault();
+      const iframe = document.createElement('iframe');
+      iframe.src = frame.dataset.videoEmbed ?? '';
+      iframe.title = frame.dataset.videoTitle ?? '';
+      iframe.allow = 'autoplay; fullscreen; picture-in-picture; encrypted-media';
+      iframe.allowFullscreen = true;
+      frame.replaceChildren(iframe);
+      iframe.focus();
+    });
+  }
+</script>
+
+<style>
+  .video {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius-s);
+    background-color: var(--color-bg-inverse);
+  }
+
+  .frame :global(img),
+  .frame :global(iframe),
+  .placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    object-fit: cover;
+  }
+
+  .placeholder {
+    background: linear-gradient(135deg, var(--palette-ebony), var(--palette-charcoal-brown));
+  }
+
+  video.frame {
+    display: block;
+    object-fit: contain;
+  }
+
+  .play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: var(--space-2xs);
+    color: var(--palette-floral-white);
+    text-decoration: none;
+    background: linear-gradient(to top, rgb(42 45 36 / 0.55), rgb(42 45 36 / 0.1));
+  }
+
+  .play-icon {
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    padding-left: 0.3rem;
+    border-radius: 50%;
+    background-color: var(--color-accent);
+    font-size: 1.6rem;
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .play:hover .play-icon,
+  .play:focus-visible .play-icon {
+    transform: scale(1.06);
+  }
+
+  .play-label {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+  }
+
+  figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2xs);
+    font-size: var(--text-xs);
+  }
+</style>

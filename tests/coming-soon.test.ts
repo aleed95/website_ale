@@ -100,5 +100,13 @@ test('a secret shorter than 16 characters never unlocks', async () => {
 });
 
 test('assets and the page itself are excluded from the function', () => {
-  assert.deepEqual(config.excludedPath, ['/_astro/*', '/favicon.svg', '/apple-touch-icon.png', '/in-costruzione/']);
+  assert.deepEqual(config.excludedPath, [
+    '/_astro/*',
+    '/favicon.svg',
+    '/apple-touch-icon.png',
+    '/in-costruzione/',
+    '/anteprima/*',
+    '/api/*',
+    '/richiesta-aggiornamento/',
+  ]);
 });

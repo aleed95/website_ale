@@ -6,10 +6,11 @@
 import '@/styles/global.css';
 import { Font } from 'astro:assets';
 import Logo from '@/assets/brand/logo-completo-verde.svg';
-import { getSiteSettings } from '@/lib/sanity/fetch';
+import { useSanity } from '@/lib/sanity/fetch';
 import { siteFallback } from '@/lib/site';
 
-const settings = await getSiteSettings('it');
+const sanity = useSanity(Astro.locals);
+const settings = await sanity.getSiteSettings('it');
 const siteName = settings?.siteName || siteFallback.name;
 ---
 

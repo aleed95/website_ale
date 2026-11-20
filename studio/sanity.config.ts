@@ -5,12 +5,16 @@ import {
 } from '@sanity/document-internationalization';
 import { visionTool } from '@sanity/vision';
 import { defineConfig, type DocumentActionComponent } from 'sanity';
+import { UploadIcon } from '@sanity/icons/Upload';
+import { presentationTool } from 'sanity/presentation';
 import { structureTool } from 'sanity/structure';
 
-import { dataset, projectId } from './lib/env';
+import { dataset, previewOrigin, projectId } from './lib/env';
+import { locations, mainDocuments, PREVIEW } from './presentation/resolve';
 import { languages, singletonTypes, translatedDocumentTypes } from './lib/languages';
 import { schemaTypes } from './schemaTypes';
 import { structure } from './structure';
+import { RequestPublishTool } from './tools/RequestPublishTool';
 
 const translatedTypes: readonly string[] = translatedDocumentTypes;
 const singletonActions = new Set(['publish', 'discardChanges', 'restore']);
@@ -24,6 +28,17 @@ export default defineConfig({
 
   plugins: [
     structureTool({ structure, title: 'Contenuti' }),
+    // "Anteprima": the site with drafts, side by side with the editor (click-to-edit).
+    presentationTool({
+      title: 'Anteprima',
+      previewUrl: {
+        origin: previewOrigin,
+        preview: `${PREVIEW}/`,
+        previewMode: { enable: '/api/anteprima/attiva/', disable: '/api/anteprima/disattiva/' },
+      },
+      allowOrigins: [previewOrigin],
+      resolve: { mainDocuments, locations },
+    }),
     documentInternationalization({
       supportedLanguages: [...languages],
       schemaTypes: [...translatedDocumentTypes],
@@ -31,6 +46,12 @@ export default defineConfig({
     }),
     // GROQ playground, useful for the developer. Hidden from the client in a later phase if preferred.
     visionTool({ defaultApiVersion: '2026-11-01', title: 'Query (sviluppo)' }),
+  ],
+
+  // Extra top-bar tool: ask the developer to publish the changes on the live site.
+  tools: (prev) => [
+    ...prev,
+    { name: 'aggiorna-sito', title: 'Aggiorna il sito', icon: UploadIcon, component: RequestPublishTool },
   ],
 
   schema: {

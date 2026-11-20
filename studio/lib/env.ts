@@ -15,3 +15,6 @@ function read(name: string): string | undefined {
 export const projectId = read('SANITY_STUDIO_PROJECT_ID') ?? 'missing-project-id';
 export const dataset = read('SANITY_STUDIO_DATASET') ?? 'production';
 export const studioHost = read('SANITY_STUDIO_HOSTNAME');
+
+/** Website that renders the live preview (Netlify, or http://localhost:4321 in development). */
+export const previewOrigin = read('SANITY_STUDIO_PREVIEW_ORIGIN') ?? 'https://alessandrodini.netlify.app';

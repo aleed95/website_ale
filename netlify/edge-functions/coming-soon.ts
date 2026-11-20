@@ -95,6 +95,16 @@ export default async function comingSoon(request: Request, context: Context): Pr
 
 export const config: Config = {
   path: '/*',
-  // Assets the under-construction page needs, and the page itself.
-  excludedPath: ['/_astro/*', '/favicon.svg', '/apple-touch-icon.png', COMING_SOON_PATH],
+  excludedPath: [
+    // Assets the under-construction page needs, and the page itself.
+    '/_astro/*',
+    '/favicon.svg',
+    '/apple-touch-icon.png',
+    COMING_SOON_PATH,
+    // Studio preview: protected by its own signed cookie (web/src/middleware.ts).
+    '/anteprima/*',
+    '/api/*',
+    // Netlify form used by the Studio's "Aggiorna il sito" button.
+    '/richiesta-aggiornamento/',
+  ],
 };

@@ -12,7 +12,7 @@ import Pictogram from '@/assets/brand/pittogramma-verde-arancio.svg';
 import { getRouteAlternates, getRoutePath, type Locale } from '@/i18n/config';
 import { t } from '@/i18n/ui';
 import { buildSeo } from '@/lib/seo';
-import { getSiteSettings, sanityClient } from '@/lib/sanity/fetch';
+import { useSanity } from '@/lib/sanity/fetch';
 import { HOME_QUERY } from '@/lib/sanity/queries';
 import { siteFallback } from '@/lib/site';
 
@@ -21,10 +21,11 @@ interface Props {
 }
 
 const { locale } = Astro.props;
+const sanity = useSanity(Astro.locals);
 const strings = t(locale);
 const [{ page, services, latestArticles }, settings] = await Promise.all([
-  sanityClient.fetch(HOME_QUERY, { language: locale }),
-  getSiteSettings(locale),
+  sanity.client.fetch(HOME_QUERY, { language: locale }),
+  sanity.getSiteSettings(locale),
 ]);
 
 const siteName = settings?.siteName || siteFallback.name;
@@ -60,6 +61,7 @@ const servicesPath = getRoutePath('services', locale);
             sizes="(min-width: 60rem) 58vw, 100vw"
             widths={[640, 960, 1280, 1600, 2000, 2400]}
             priority
+            edit={{ id: `homePage-${locale}`, type: 'homePage', path: 'heroImage' }}
           />
         ) : (
           <div class="hero-placeholder" aria-hidden="true" />

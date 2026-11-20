@@ -7,15 +7,16 @@ import Button from '@/components/ui/Button.astro';
 import { getContactThanksPath, getRoutePath, locales, type Locale } from '@/i18n/config';
 import { t } from '@/i18n/ui';
 import { stripEmphasis } from '@/lib/emphasis';
-import { getSectionPages } from '@/lib/sanity/fetch';
+import { useSanity } from '@/lib/sanity/fetch';
 
 interface Props {
   locale: Locale;
 }
 
 const { locale } = Astro.props;
+const sanity = useSanity(Astro.locals);
 const strings = t(locale).contact;
-const form = (await getSectionPages(locale))?.contactForm;
+const form = (await sanity.getSectionPages(locale))?.contactForm;
 const title = form?.thanksTitle || strings.thanksTitle;
 const alternates = Object.fromEntries(locales.map((l) => [l, getContactThanksPath(l)]));
 ---

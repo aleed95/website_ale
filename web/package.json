@@ -10,9 +10,12 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/netlify": "^8.2.14",
     "@astrojs/sitemap": "^3.7.6",
     "@sanity/client": "^8.16.0",
     "@sanity/image-url": "^2.2.0",
+    "@sanity/preview-url-secret": "^4.1.5",
+    "@sanity/visual-editing-standalone": "^2.0.4",
     "astro": "^7.4.13",
     "astro-portabletext": "^1.0.1",
     "groq": "^6.24.0"

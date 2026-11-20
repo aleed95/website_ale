@@ -18,7 +18,7 @@ const href = projectPath(locale, project.slug ?? '');
 ---
 
 <article class="card">
-  <div class="media"><SanityImage image={project.coverImage} aspectRatio={4 / 3} sizes="(min-width: 60rem) 33vw, (min-width: 40rem) 50vw, 100vw" alt="" /></div>
+  <div class="media"><SanityImage image={project.coverImage} aspectRatio={4 / 3} sizes="(min-width: 60rem) 33vw, (min-width: 40rem) 50vw, 100vw" alt="" edit={{ id: project._id, type: 'project', path: 'coverImage' }} /></div>
   <div class="body">
     {project.category?.title && <p class="eyebrow">{project.category.title}</p>}
     <Heading class="title"><a href={href}><Emphasis text={project.title} /></a></Heading>

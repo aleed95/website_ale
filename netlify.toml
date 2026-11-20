@@ -4,7 +4,9 @@
 
 [build]
   base = "/"
-  command = "npm run build"
+  # Builds the site, then moves the adapter's output (the /anteprima/ preview function)
+  # to .netlify/v1 at the repository root, where Netlify looks for it.
+  command = "npm run build:netlify"
   publish = "web/dist"
 
 [build.environment]

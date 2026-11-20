@@ -1,0 +1,16 @@
+---
+import type { Props as PortableTextProps } from 'astro-portabletext/types';
+import VideoEmbed from './VideoEmbed.astro';
+
+type Props = PortableTextProps<{ _type: 'video'; _key: string } & Parameters<typeof VideoEmbed>[0]['video']>;
+
+const { node } = Astro.props;
+---
+
+<VideoEmbed video={node} class="pt-video" />
+
+<style>
+  :global(.pt-video) {
+    margin-block: var(--space-l);
+  }
+</style>

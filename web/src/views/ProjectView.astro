@@ -4,13 +4,14 @@ import Container from '@/components/ui/Container.astro';
 import PageHeader from '@/components/ui/PageHeader.astro';
 import Figure from '@/components/content/Figure.astro';
 import RichText from '@/components/content/RichText.astro';
+import VideoEmbed from '@/components/content/VideoEmbed.astro';
 import { getRoutePath, type Locale } from '@/i18n/config';
 import { t } from '@/i18n/ui';
 import { formatPeriod } from '@/lib/format';
 import { projectPath, translationAlternates } from '@/lib/links';
 import type { ProjectDocument } from '@/lib/paths';
 import { buildSeo } from '@/lib/seo';
-import { getSiteSettings } from '@/lib/sanity/fetch';
+import { useSanity } from '@/lib/sanity/fetch';
 
 interface Props {
   locale: Locale;
@@ -18,8 +19,9 @@ interface Props {
 }
 
 const { locale, project } = Astro.props;
+const sanity = useSanity(Astro.locals);
 const strings = t(locale);
-const settings = await getSiteSettings(locale);
+const settings = await sanity.getSiteSettings(locale);
 const seo = buildSeo({
   title: project.title ?? '',
   seo: project.seo,
@@ -56,7 +58,7 @@ const relatedServices = (project.relatedServices ?? []).filter((s) => s !== null
   </PageHeader>
 
   <Container>
-    <Figure image={project.coverImage} sizes="(min-width: 76rem) 76rem, 100vw" priority />
+    <Figure image={project.coverImage} sizes="(min-width: 76rem) 76rem, 100vw" priority edit={{ id: project._id, type: 'project', path: 'coverImage' }} />
   </Container>
 
   <Container class="project">
@@ -81,9 +83,13 @@ const relatedServices = (project.relatedServices ?? []).filter((s) => s !== null
         <Container>
           <h2 id="gallery-title" class="visually-hidden">{strings.projects.gallery}</h2>
           <ul role="list" class="gallery">
-            {gallery.map((image) => (
+            {gallery.map((item) => (
               <li>
-                <Figure image={image} aspectRatio={4 / 3} sizes="(min-width: 60rem) 33vw, (min-width: 40rem) 50vw, 100vw" />
+                {item._type === 'video' ? (
+                  <VideoEmbed video={item} sizes="(min-width: 60rem) 33vw, (min-width: 40rem) 50vw, 100vw" />
+                ) : (
+                  <Figure image={item} aspectRatio={4 / 3} sizes="(min-width: 60rem) 33vw, (min-width: 40rem) 50vw, 100vw" />
+                )}
               </li>
             ))}
           </ul>

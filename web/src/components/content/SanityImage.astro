@@ -7,6 +7,8 @@
  * - optional blurred low-quality placeholder while loading
  */
 import { hasImage, urlFor, type SanityImageSource } from '@/lib/sanity/image';
+import { editAttribute, type EditTarget } from '@/lib/sanity/edit';
+import { useSanity } from '@/lib/sanity/fetch';
 
 interface Props {
   image: SanityImageSource | null | undefined;
@@ -20,6 +22,8 @@ interface Props {
   class?: string | undefined;
   /** Override the CMS alt text; pass "" for purely decorative images. */
   alt?: string | undefined;
+  /** Field to open when the image is clicked in the Studio preview. */
+  edit?: EditTarget | undefined;
 }
 
 const {
@@ -31,7 +35,9 @@ const {
   placeholder = true,
   class: className,
   alt,
+  edit,
 } = Astro.props;
+const dataSanity = editAttribute(useSanity(Astro.locals).preview, edit);
 
 const source = hasImage(image) ? image : null;
 const dimensions = source?.asset.metadata?.dimensions;
@@ -77,6 +83,7 @@ const altText = alt ?? source?.alt ?? '';
       fetchpriority={priority ? 'high' : 'auto'}
       class:list={['sanity-image', className]}
       style={lqip ? `background-image: url(${lqip})` : undefined}
+      data-sanity={dataSanity}
     />
   )
 }

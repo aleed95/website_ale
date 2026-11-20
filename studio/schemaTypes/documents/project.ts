@@ -47,7 +47,8 @@ export const project = defineType({
       title: 'Galleria',
       type: 'array',
       group: 'media',
-      of: [defineArrayMember({ type: 'accessibleImage' })],
+      description: 'Foto e video del progetto, nell’ordine in cui appaiono.',
+      of: [defineArrayMember({ type: 'accessibleImage' }), defineArrayMember({ type: 'video' })],
       options: { layout: 'grid' },
     }),
     defineField({

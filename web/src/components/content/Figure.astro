@@ -1,6 +1,7 @@
 ---
 /** Image with optional caption and photo credit. */
 import type { SanityImageSource } from '@/lib/sanity/image';
+import type { EditTarget } from '@/lib/sanity/edit';
 import SanityImage from './SanityImage.astro';
 
 interface Props {
@@ -9,9 +10,10 @@ interface Props {
   aspectRatio?: number;
   priority?: boolean;
   class?: string;
+  edit?: EditTarget | undefined;
 }
 
-const { image, sizes, aspectRatio, priority, class: className } = Astro.props;
+const { image, sizes, aspectRatio, priority, class: className, edit } = Astro.props;
 const caption = image?.caption;
 const credit = image?.credit;
 ---
@@ -19,7 +21,7 @@ const credit = image?.credit;
 {
   image?.asset && (
     <figure class:list={['figure', className]}>
-      <SanityImage image={image} sizes={sizes} aspectRatio={aspectRatio} priority={priority} />
+      <SanityImage image={image} sizes={sizes} aspectRatio={aspectRatio} priority={priority} edit={edit} />
       {(caption || credit) && (
         <figcaption>
           {caption}

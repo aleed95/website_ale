@@ -27,8 +27,10 @@ Sanity Studio ──publish──▶ Sanity webhook ──▶ Netlify build hook
 ```
 
 - **No JavaScript framework on the website.** Astro components only; the only client JS is
-  the ~0.5 KB mobile-menu script. React exists only inside Sanity Studio, which is a
-  separate app.
+  the ~0.5 KB mobile-menu script (plus the click-to-play video script on pages with
+  videos). The click-to-edit overlay is loaded only on the `/anteprima/` preview pages.
+- **Static site + one preview function.** Public pages are prebuilt; only `/anteprima/*`
+  (Studio live preview of drafts) and its `/api/anteprima/*` endpoints run on demand.
 - **Content is read at build time.** Visitors never call Sanity; no token reaches the
   browser.
 - **The Studio is deployed separately** on Sanity's free hosting, so the website does not
@@ -142,13 +144,14 @@ cp studio/.env.example studio/.env
 | `SANITY_PROJECT_ID` | web | no | Sanity project ID |
 | `SANITY_DATASET` | web | no | Dataset, default `production` |
 | `SANITY_API_VERSION` | web | no | Pinned API date, default `2026-11-01` |
-| `SANITY_API_READ_TOKEN` | web | **yes** | Optional. Only if the dataset is private (Viewer token) |
+| `SANITY_API_READ_TOKEN` | web + Netlify | **yes** | Viewer token: drafts for the Studio preview (and private datasets) |
+| `PREVIEW_SECRET` | web + Netlify | **yes** | Signs the preview cookie; also the under-construction secret link |
 | `SITE_URL` | web | no | Public URL, no trailing slash. On Netlify falls back to `URL` |
 | `SANITY_STUDIO_PROJECT_ID` | studio | no | Same project ID |
 | `SANITY_STUDIO_DATASET` | studio | no | Same dataset |
 | `SANITY_STUDIO_HOSTNAME` | studio | no | Studio hostname → `https://<hostname>.sanity.studio` |
 | `COMING_SOON` | Netlify | no | `true` shows "Sito in costruzione" to visitors (see DEPLOYMENT.md) |
-| `PREVIEW_SECRET` | Netlify | **yes** | Secret link `?anteprima=<secret>` to see the real site while under construction |
+| `SANITY_STUDIO_PREVIEW_ORIGIN` | studio | no | Site shown in the Anteprima tab (default: the Netlify site) |
 
 **Datasets per mode.** `astro dev` and `sanity dev` also load `.env.development`, which
 switches local development to the `development` dataset (sample content). Builds and the

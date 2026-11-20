@@ -18,7 +18,8 @@
     "check": "npm run check --workspace web && npm run typecheck --workspace studio",
     "deploy:studio": "npm run deploy --workspace studio",
     "typegen": "npm run typegen --workspace studio",
-    "test": "node --test \"tests/**/*.test.ts\""
+    "test": "node --test \"tests/**/*.test.ts\"",
+    "build:netlify": "npm run build && rm -rf .netlify/v1 && mkdir -p .netlify && cp -R web/.netlify/v1 .netlify/v1"
   },
   "devDependencies": {
     "@netlify/edge-functions": "^4.0.4"

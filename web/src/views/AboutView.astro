@@ -9,7 +9,7 @@ import { getRouteAlternates, type Locale } from '@/i18n/config';
 import { t } from '@/i18n/ui';
 import { formatYears } from '@/lib/format';
 import { buildSeo } from '@/lib/seo';
-import { getSiteSettings, sanityClient } from '@/lib/sanity/fetch';
+import { useSanity } from '@/lib/sanity/fetch';
 import { BIOGRAPHY_QUERY } from '@/lib/sanity/queries';
 
 interface Props {
@@ -17,10 +17,11 @@ interface Props {
 }
 
 const { locale } = Astro.props;
+const sanity = useSanity(Astro.locals);
 const strings = t(locale);
 const [bio, settings] = await Promise.all([
-  sanityClient.fetch(BIOGRAPHY_QUERY, { language: locale }),
-  getSiteSettings(locale),
+  sanity.client.fetch(BIOGRAPHY_QUERY, { language: locale }),
+  sanity.getSiteSettings(locale),
 ]);
 
 const title = bio?.title || strings.nav.about;
@@ -53,7 +54,7 @@ const timelines = [
     bio && (
       <Container class="about-intro">
         <p class="lead">{bio.introduction}</p>
-        <Figure image={bio.profileImage} aspectRatio={4 / 5} sizes="(min-width: 60rem) 40vw, 100vw" priority class="portrait" />
+        <Figure image={bio.profileImage} aspectRatio={4 / 5} sizes="(min-width: 60rem) 40vw, 100vw" priority class="portrait" edit={{ id: `biography-${locale}`, type: 'biography', path: 'profileImage' }} />
       </Container>
     )
   }
