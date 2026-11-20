@@ -153,7 +153,7 @@ cp studio/.env.example studio/.env
 | `SANITY_STUDIO_DATASET` | studio | no | Same dataset |
 | `SANITY_STUDIO_HOSTNAME` | studio | no | Studio hostname → `https://<hostname>.sanity.studio` |
 | `COMING_SOON` | Netlify | no | `true` shows "Sito in costruzione" to visitors (see DEPLOYMENT.md) |
-| `SANITY_STUDIO_PREVIEW_ORIGIN` | studio | no | Site shown in the Anteprima tab (default: the Netlify site) |
+| `SANITY_STUDIO_PREVIEW_ORIGIN` | studio | no | Site shown in the "Modifica sul sito" tab (default: the Netlify site) |
 
 **Datasets per mode.** `astro dev` and `sanity dev` also load `.env.development`, which
 switches local development to the `development` dataset (sample content). Builds and the

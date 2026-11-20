@@ -1,5 +1,5 @@
 /**
- * "Aggiorna il sito": the editor asks the developer to publish the latest changes.
+ * "Richiedi aggiornamento": the editor asks the developer to publish the latest changes.
  * Sends the Netlify form "richiesta-aggiornamento" on the website; Netlify e-mails the
  * developer. Publishing in the Studio saves content but does not rebuild the site by
  * itself (each rebuild costs Netlify credits), so this is the hand-off.
@@ -43,7 +43,7 @@ export function RequestPublishTool() {
     <Container width={1} padding={4} paddingTop={5}>
       <Stack gap={5}>
         <Heading as="h1" size={3}>
-          Aggiorna il sito
+          Richiedi l’aggiornamento del sito
         </Heading>
         <Stack gap={3}>
           <Text>
@@ -51,7 +51,7 @@ export function RequestPublishTool() {
             anche in home.
           </Text>
           <Text>
-            Tutto il resto (testi della home, chi sono, pubblicazioni, impostazioni…) lo vedi subito nella scheda <strong>Anteprima</strong>, ma
+            Tutto il resto (testi della home, chi sono, pubblicazioni, impostazioni…) lo vedi subito in <strong>Modifica sul sito</strong>, ma
             arriva sul sito pubblico solo quando lo sviluppatore lo aggiorna. Quando hai finito, mandagli una richiesta da
             qui.
           </Text>

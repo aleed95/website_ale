@@ -30,10 +30,10 @@ export default defineConfig({
   dataset,
 
   plugins: [
-    structureTool({ structure, title: 'Contenuti' }),
-    // "Anteprima": the site with drafts, side by side with the editor (click-to-edit).
+    structureTool({ structure, title: 'Tutti i contenuti' }),
+    // "Modifica sul sito": the site with drafts, side by side with the editor (click-to-edit).
     presentationTool({
-      title: 'Anteprima',
+      title: 'Modifica sul sito',
       previewUrl: {
         origin: previewOrigin,
         preview: `${PREVIEW}/`,
@@ -47,16 +47,20 @@ export default defineConfig({
       schemaTypes: [...translatedDocumentTypes],
       languageField: 'language',
     }),
-    // GROQ playground, useful for the developer. Hidden from the client in a later phase if preferred.
-    visionTool({ defaultApiVersion: '2026-11-01', title: 'Query (sviluppo)' }),
+    // GROQ playground for the developer: only in the local Studio (`npm run dev:studio`).
+    ...(import.meta.env.DEV ? [visionTool({ defaultApiVersion: '2026-11-01', title: 'Query (sviluppo)' })] : []),
   ],
+
+  // Content Releases (scheduling groups of changes) is not needed here and would only
+  // confuse the editor.
+  releases: { enabled: false },
 
   // Extra top-bar tool: ask the developer to publish the changes on the live site.
   tools: (prev) => [
     { name: 'nuovo-articolo', title: 'Nuovo articolo', icon: ComposeIcon, component: newDocumentTool('article', 'article-it') },
     { name: 'nuovo-progetto', title: 'Nuovo progetto', icon: ImagesIcon, component: newDocumentTool('project', 'project-it') },
     ...prev,
-    { name: 'aggiorna-sito', title: 'Aggiorna il sito', icon: UploadIcon, component: RequestPublishTool },
+    { name: 'aggiorna-sito', title: 'Richiedi aggiornamento', icon: UploadIcon, component: RequestPublishTool },
   ],
 
   schema: {

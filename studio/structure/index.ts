@@ -82,7 +82,7 @@ function translatedList(S: StructureBuilder, type: string, title: string, icon: 
 
 export const structure: StructureResolver = (S) =>
   S.list()
-    .title('Contenuti')
+    .title('Tutti i contenuti')
     .items([
       singleton(S, 'siteSettings', 'Impostazioni sito', CogIcon),
       singleton(S, 'navigation', 'Navigazione e footer', MenuIcon),

@@ -1,5 +1,5 @@
 /**
- * Presentation tool ("Anteprima") wiring: which document belongs to which preview URL,
+ * Presentation tool ("Modifica sul sito") wiring: which document belongs to which preview URL,
  * and where each document appears on the site. URLs mirror web/src/i18n/config.ts.
  */
 import { defineDocuments, defineLocations, type PresentationPluginOptions } from 'sanity/presentation';

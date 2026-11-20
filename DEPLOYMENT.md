@@ -5,8 +5,8 @@ How the website and the Studio go online, and how they stay up to date.
 ```
 push to main ───────────────┐
                             ▼
-Studio "Aggiorna il sito" ──e-mail──▶ developer ──Trigger deploy──▶ npm run build ──▶ CDN
-Studio "Anteprima" tab ──▶ /anteprima/* (Netlify Function, drafts, never cached)
+Studio "Richiedi aggiornamento" ──e-mail──▶ developer ──Trigger deploy──▶ npm run build ──▶ CDN
+Studio "Modifica sul sito" tab ──▶ /anteprima/* (Netlify Function, drafts, never cached)
 Sanity Studio ──npm run deploy:studio──▶ https://<hostname>.sanity.studio
 ```
 
@@ -16,7 +16,7 @@ Sanity Studio ──npm run deploy:studio──▶ https://<hostname>.sanity.stu
 | Under-construction mode | Netlify Edge Function | [`netlify/edge-functions/coming-soon.ts`](netlify/edge-functions/coming-soon.ts) |
 | Contact form | Netlify Forms (form `contact`) | [`ContactForm.astro`](web/src/components/content/ContactForm.astro) |
 | Studio preview (drafts, click-to-edit) | Netlify Function via `@astrojs/netlify` | [`web/src/pages/anteprima/[...path].astro`](web/src/pages/anteprima/%5B...path%5D.astro), [`web/src/middleware.ts`](web/src/middleware.ts) |
-| "Aggiorna il sito" request | Netlify Forms (form `richiesta-aggiornamento`) | [`studio/tools/RequestPublishTool.tsx`](studio/tools/RequestPublishTool.tsx) |
+| "Richiedi aggiornamento" request | Netlify Forms (form `richiesta-aggiornamento`) | [`studio/tools/RequestPublishTool.tsx`](studio/tools/RequestPublishTool.tsx) |
 | Studio | Sanity hosting | [`studio/sanity.cli.ts`](studio/sanity.cli.ts) |
 
 ---
@@ -88,10 +88,10 @@ therefore **not** rebuilt automatically on every publish:
   minutes. Published content is live within ~5 minutes, with no deploy and no build
   credits. The other home texts stay static and change with a deploy.
 - The editor works in the Studio and sees every change — drafts included — in the
-  **Anteprima** tab (live preview, click-to-edit). This uses no build.
+  **Modifica sul sito** tab (live preview, click-to-edit). This uses no build.
 - The Studio is also reachable at **`/admin`** on the website (redirect), and its top bar
   has **Nuovo articolo** and **Nuovo progetto** shortcuts.
-- When done, the editor opens **Aggiorna il sito** in the Studio and sends a request:
+- When done, the editor opens **Richiedi aggiornamento** in the Studio and sends a request:
   the developer receives an e-mail (Netlify form `richiesta-aggiornamento`).
 - The developer publishes: *Netlify → Deploys → Trigger deploy → Deploy project*
   (or `curl -X POST -d '{}' <build hook URL>`).
@@ -117,7 +117,7 @@ by the Studio (`https://alessandrodini.sanity.studio`, also when opened inside t
 Dashboard on `https://www.sanity.io`) and `http://localhost:3333`. Function usage costs
 compute credits (fractions of a credit per page view), not deploys.
 
-Local preview: run `npm run dev` and `npm run dev:studio`, open the Studio's Anteprima tab
+Local preview: run `npm run dev` and `npm run dev:studio`, open the Studio's "Modifica sul sito" tab
 (`studio/.env.development` points it to `http://localhost:4321`; `http://localhost:3333`
 must be a CORS origin with credentials in sanity.io/manage).
 
@@ -146,7 +146,7 @@ domain the **primary domain**: canonical URLs and the sitemap follow it on the n
       Navigazione e footer, Home, Chi sono, Testi delle sezioni, Privacy policy page
       (and linked in *Impostazioni sito → Pagina della privacy policy*)
 - [ ] Form detection on, email notification set, one test submission received
-- [ ] Preview works from the Studio's Anteprima tab; "Aggiorna il sito" e-mail received
+- [ ] Preview works from the Studio's "Modifica sul sito" tab; "Richiedi aggiornamento" e-mail received
 - [ ] Custom domain connected and primary, HTTPS active
 - [ ] `COMING_SOON=false` + new deploy
 - [ ] Check `https://<domain>/robots.txt` and `/sitemap-index.xml`; submit the sitemap in
