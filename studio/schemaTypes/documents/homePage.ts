@@ -65,6 +65,27 @@ export const homePage = defineType({
       description: 'Due o tre frasi; il testo completo è nella pagina "Chi sono".',
     }),
     defineField({
+      name: 'servicesTitle',
+      title: 'Servizi — titolo grande',
+      type: 'string',
+      group: 'sections',
+      description: `Facoltativo. Sopra compare la scritta piccola «Servizi». Es.: "Cosa posso fare *per te*". ${emphasisHint}`,
+    }),
+    defineField({
+      name: 'projectsTitle',
+      title: 'Progetti — titolo grande',
+      type: 'string',
+      group: 'sections',
+      description: `Facoltativo. Sopra compare la scritta piccola «Progetti». Es.: "Lavori *sul campo*". ${emphasisHint}`,
+    }),
+    defineField({
+      name: 'articlesTitle',
+      title: 'Articoli — titolo grande',
+      type: 'string',
+      group: 'sections',
+      description: `Facoltativo. Sopra compare la scritta piccola «Articoli». Es.: "Dal *quaderno* di campo". ${emphasisHint}`,
+    }),
+    defineField({
       name: 'featuredProjects',
       title: 'Progetti in evidenza',
       type: 'array',
@@ -83,6 +104,13 @@ export const homePage = defineType({
         },
       ],
       validation: (rule) => rule.max(6).unique(),
+    }),
+    defineField({
+      name: 'publicationsTitle',
+      title: 'Pubblicazioni — titolo grande',
+      type: 'string',
+      group: 'sections',
+      description: `Facoltativo. Sopra compare la scritta piccola «Pubblicazioni». Es.: "Ricerca e *divulgazione*". ${emphasisHint}`,
     }),
     defineField({
       name: 'featuredPublications',

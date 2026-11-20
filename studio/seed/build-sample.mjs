@@ -107,6 +107,23 @@ add({
   ],
 });
 
+const sectionTitles = {
+  it: {
+    services: 'Cosa posso fare *per te* [esempio]',
+    projects: 'Lavori *sul campo* [esempio]',
+    publications: 'Ricerca e *divulgazione* [esempio]',
+    articles: 'Dal *quaderno* di campo [esempio]',
+    contact: 'Parliamo del *tuo progetto* [esempio]',
+  },
+  en: {
+    services: 'What I can do *for you* [sample]',
+    projects: 'Work *in the field* [sample]',
+    publications: 'Research and *outreach* [sample]',
+    articles: 'From the field *notebook* [sample]',
+    contact: 'Let’s talk about *your project* [sample]',
+  },
+};
+
 for (const [lang, L] of [
   ['it', { services: 'Servizi', projects: 'Progetti', publications: 'Pubblicazioni', articles: 'Articoli', contact: 'Contatti' }],
   ['en', { services: 'Services', projects: 'Projects', publications: 'Publications', articles: 'Articles', contact: 'Contact' }],
@@ -115,7 +132,10 @@ for (const [lang, L] of [
     _id: `sectionPages-${lang}`,
     _type: 'sectionPages',
     ...Object.fromEntries(
-      Object.entries(L).map(([k, title]) => [k, { _type: 'sectionIntro', title, intro: lorem[lang].slice(0, 90) }]),
+      Object.entries(L).map(([k, title]) => [
+        k,
+        { _type: 'sectionIntro', title: sectionTitles[lang][k] ?? title, intro: lorem[lang].slice(0, 90) },
+      ]),
     ),
     contactForm: {
       formTitle: lang === 'it' ? 'Scrivimi [esempio]' : 'Write to me [sample]',
@@ -270,6 +290,10 @@ for (const lang of ['it', 'en']) {
     heroText: lorem[lang],
     introTitle: it ? 'Presentazione *di esempio*' : 'Sample *introduction*',
     introText: lorem[lang],
+    servicesTitle: it ? 'Cosa posso fare *per te* [esempio]' : 'What I can do *for you* [sample]',
+    projectsTitle: it ? 'Lavori *sul campo* [esempio]' : 'Work *in the field* [sample]',
+    articlesTitle: it ? 'Dal *quaderno* di campo [esempio]' : 'From the field *notebook* [sample]',
+    publicationsTitle: it ? 'Ricerca e *divulgazione* [esempio]' : 'Research and *outreach* [sample]',
     featuredProjects: projects.map((p) => ({ _key: key(), ...ref(`project-${p.id}-${lang}`) })),
     featuredPublications: publications.slice(0, 2).map((p) => ({ _key: key(), ...ref(`publication-${p.id}`) })),
     ctaTitle: it ? 'Hai un progetto *in mente*? [esempio]' : 'Have a project *in mind*? [sample]',

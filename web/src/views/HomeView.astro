@@ -118,7 +118,7 @@ const servicesPath = getRoutePath('services', locale);
     services.length > 0 && (
       <section class="section section--alt" aria-labelledby="services-title">
         <Container>
-          <SectionHeading id="services-title" title={strings.home.services} href={servicesPath} linkLabel={strings.home.allServices} />
+          <SectionHeading id="services-title" label={strings.nav.services} title={page?.servicesTitle} href={servicesPath} linkLabel={strings.home.allServices} />
           <ol role="list" class="services">
             {services.map((service, index) => (
               <li class="card service">
@@ -146,7 +146,8 @@ const servicesPath = getRoutePath('services', locale);
         <Container>
           <SectionHeading
             id="projects-title"
-            title={strings.home.selectedProjects}
+            label={strings.nav.projects}
+            title={page?.projectsTitle}
             href={getRoutePath('projects', locale)}
             linkLabel={strings.home.allProjects}
           />
@@ -169,7 +170,8 @@ const servicesPath = getRoutePath('services', locale);
         <Container>
           <SectionHeading
             id="articles-title"
-            title={strings.home.latestArticles}
+            label={strings.nav.articles}
+            title={page?.articlesTitle}
             href={getRoutePath('articles', locale)}
             linkLabel={strings.home.allArticles}
           />
@@ -192,7 +194,8 @@ const servicesPath = getRoutePath('services', locale);
         <Container>
           <SectionHeading
             id="publications-title"
-            title={strings.home.selectedPublications}
+            label={strings.nav.publications}
+            title={page?.publicationsTitle}
             href={getRoutePath('publications', locale)}
             linkLabel={strings.home.allPublications}
           />
@@ -213,6 +216,7 @@ const servicesPath = getRoutePath('services', locale);
         <Container>
           <div class="cta reveal">
             <div class="cta-text">
+              <p class="eyebrow">{strings.nav.contact}</p>
               <h2 id="cta-title">
                 <Emphasis text={page.ctaTitle} />
               </h2>

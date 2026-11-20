@@ -36,7 +36,7 @@ for (const publication of publications) {
   locale={locale}
   alternates={getRouteAlternates('publications')}
 >
-  <PageHeader title={meta.title} intro={meta.intro} />
+  <PageHeader title={meta.title} eyebrow={meta.eyebrow} intro={meta.intro} />
   <Container class="publications">
     {publications.length === 0 && <EmptyState locale={locale} />}
     {

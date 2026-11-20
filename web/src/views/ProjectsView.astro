@@ -29,7 +29,7 @@ const [meta, projects] = await Promise.all([
   locale={locale}
   alternates={getRouteAlternates('projects')}
 >
-  <PageHeader title={meta.title} intro={meta.intro} />
+  <PageHeader title={meta.title} eyebrow={meta.eyebrow} intro={meta.intro} />
   <Container class="listing">
     {projects.length === 0 && <EmptyState locale={locale} />}
     <ul role="list" class="card-grid">

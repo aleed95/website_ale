@@ -1,3 +1,5 @@
+import { stegaClean } from '@sanity/client/stega';
+
 /**
  * Editors mark the emphasised word of a title with asterisks — "La vita segreta *delle dune*" —
  * rendered in Fraunces italic as in the brand manual (p.11).
@@ -17,6 +19,12 @@ export function emphasisParts(value: string | null | undefined): EmphasisPart[] 
         ? { text: part.slice(1, -1), em: true }
         : { text: part, em: false },
     );
+}
+
+/** True when a CMS title says something more than a fixed label (ignores *emphasis*, case, spaces). */
+export function differsFromLabel(title: string | null | undefined, label: string): boolean {
+  const normalize = (value: string) => stripEmphasis(stegaClean(value)).trim().toLowerCase();
+  return Boolean(title) && normalize(title!) !== normalize(label);
 }
 
 /** Plain text for <title>, meta tags and alt attributes. */

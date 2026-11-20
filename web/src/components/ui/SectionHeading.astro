@@ -1,18 +1,37 @@
 ---
-/** Heading of a home-page section with an optional "see all" link on the right. */
+/**
+ * Heading of a home-page section: small label (the section name) above a large title
+ * chosen by the editor, plus an optional "see all" link. Without an editor title the
+ * section name is the large title and no label is repeated.
+ */
 import Emphasis from './Emphasis.astro';
+import { differsFromLabel } from '@/lib/emphasis';
 
 interface Props {
   id: string;
-  title: string;
+  /** Section name, e.g. "Servizi". */
+  label: string;
+  /** Large title from the CMS, e.g. "Cosa posso fare *per te*". */
+  title?: string | null | undefined;
   href?: string | undefined;
   linkLabel?: string | undefined;
 }
 
-const { id, title, href, linkLabel } = Astro.props;
+const { id, label, title, href, linkLabel } = Astro.props;
+const showLabel = differsFromLabel(title, label);
 ---
 
 <div class="section-heading">
-  <h2 id={id}><Emphasis text={title} /></h2>
+  <div class="titles">
+    {showLabel && <p class="eyebrow">{label}</p>}
+    <h2 id={id}><Emphasis text={showLabel ? title : label} /></h2>
+  </div>
   {href && linkLabel && <a href={href} class="arrow-link">{linkLabel}</a>}
 </div>
+
+<style>
+  .titles {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+</style>

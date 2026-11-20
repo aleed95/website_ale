@@ -35,7 +35,7 @@ const [meta, services] = await Promise.all([
   locale={locale}
   alternates={getRouteAlternates('services')}
 >
-  <PageHeader title={meta.title} intro={meta.intro} />
+  <PageHeader title={meta.title} eyebrow={meta.eyebrow} intro={meta.intro} />
 
   <Container class="services">
     {services.length === 0 && <EmptyState locale={locale} />}

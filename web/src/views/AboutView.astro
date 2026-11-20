@@ -8,6 +8,7 @@ import RichText from '@/components/content/RichText.astro';
 import { getRouteAlternates, type Locale } from '@/i18n/config';
 import { t } from '@/i18n/ui';
 import { formatYears } from '@/lib/format';
+import { differsFromLabel } from '@/lib/emphasis';
 import { buildSeo } from '@/lib/seo';
 import { useSanity } from '@/lib/sanity/fetch';
 import { BIOGRAPHY_QUERY } from '@/lib/sanity/queries';
@@ -46,7 +47,7 @@ const timelines = [
   locale={locale}
   alternates={getRouteAlternates('about')}
 >
-  <PageHeader title={title} />
+  <PageHeader title={title} eyebrow={differsFromLabel(bio?.title, strings.nav.about) ? strings.nav.about : null} />
 
   {!bio && <Container><EmptyState locale={locale} /></Container>}
 
