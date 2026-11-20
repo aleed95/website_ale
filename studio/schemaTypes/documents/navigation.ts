@@ -23,6 +23,12 @@ export const navigation = defineType({
       description: 'Una o due frasi su chi sei, mostrate in fondo a ogni pagina.',
     }),
     defineField({
+      name: 'copyrightNote',
+      title: 'Nota del copyright',
+      type: 'localeString',
+      description: 'Compare in fondo al sito dopo «© anno Nome». Es.: "foto e video dell’autore". Se vuota: «Tutti i diritti riservati».',
+    }),
+    defineField({
       name: 'footerLinks',
       title: 'Link nel footer',
       type: 'array',

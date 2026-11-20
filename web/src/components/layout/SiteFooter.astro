@@ -96,7 +96,7 @@ const socialLinks = (settings?.socialLinks ?? []).filter((link) => link.url);
 
   <Container class="legal">
     <p>
-      © {year} {siteName}. {strings.footer.allRightsReserved}
+      © {year} {siteName} — {navigation?.copyrightNote || strings.footer.allRightsReserved}
       {settings?.vatNumber && <span class="vat">{strings.footer.vat} {settings.vatNumber}</span>}
     </p>
     {

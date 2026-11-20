@@ -143,6 +143,7 @@ export const NAVIGATION_QUERY = defineQuery(`
   *[_type == "navigation" && _id == "navigation"][0]{
     mainMenu[]{ ${navLinkFields} },
     "footerSummary": select($language == "en" => footerSummary.en, footerSummary.it),
+    "copyrightNote": select($language == "en" => copyrightNote.en, copyrightNote.it),
     footerLinks[]{ ${navLinkFields} }
   }
 `);
