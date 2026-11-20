@@ -56,10 +56,13 @@ export default defineConfig({
   releases: { enabled: false },
 
   // Extra top-bar tool: ask the developer to publish the changes on the live site.
+  // Top bar order: Tutti i contenuti, Nuovo articolo, Nuovo progetto, Modifica sul sito,
+  // Richiedi aggiornamento (+ Query only in the local Studio).
   tools: (prev) => [
+    ...prev.filter((tool) => tool.name === 'structure'),
     { name: 'nuovo-articolo', title: 'Nuovo articolo', icon: ComposeIcon, component: newDocumentTool('article', 'article-it') },
     { name: 'nuovo-progetto', title: 'Nuovo progetto', icon: ImagesIcon, component: newDocumentTool('project', 'project-it') },
-    ...prev,
+    ...prev.filter((tool) => tool.name !== 'structure'),
     { name: 'aggiorna-sito', title: 'Richiedi aggiornamento', icon: UploadIcon, component: RequestPublishTool },
   ],
 
