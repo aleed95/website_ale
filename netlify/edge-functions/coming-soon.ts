@@ -63,16 +63,14 @@ export default async function comingSoon(request: Request, context: Context): Pr
   }
 
   // Everyone else: the under-construction page, with "temporarily unavailable" status.
+  // Start from the static page's headers so the security headers of netlify.toml are kept.
   const page = await fetch(new URL(COMING_SOON_PATH, url));
-  return new Response(page.body, {
-    status: 503,
-    headers: {
-      'Content-Type': 'text/html; charset=utf-8',
-      'Retry-After': '86400',
-      'X-Robots-Tag': 'noindex, nofollow',
-      'Cache-Control': 'no-store',
-    },
-  });
+  const headers = new Headers(page.headers);
+  headers.set('Content-Type', 'text/html; charset=utf-8');
+  headers.set('Retry-After', '86400');
+  headers.set('X-Robots-Tag', 'noindex, nofollow');
+  headers.set('Cache-Control', 'no-store');
+  return new Response(page.body, { status: 503, headers });
 }
 
 export const config: Config = {
