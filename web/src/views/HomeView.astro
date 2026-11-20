@@ -6,7 +6,7 @@ import Emphasis from '@/components/ui/Emphasis.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
 import SanityImage from '@/components/content/SanityImage.astro';
 import ProjectCard from '@/components/content/ProjectCard.astro';
-import ArticleCard from '@/components/content/ArticleCard.astro';
+import LatestArticles from '@/components/content/LatestArticles.astro';
 import PublicationItem from '@/components/content/PublicationItem.astro';
 import Pictogram from '@/assets/brand/pittogramma-verde-arancio.svg';
 import PictogramLight from '@/assets/brand/pittogramma-beige-arancio.svg';
@@ -25,7 +25,7 @@ interface Props {
 const { locale } = Astro.props;
 const sanity = useSanity(Astro.locals);
 const strings = t(locale);
-const [{ page, services, latestArticles }, settings] = await Promise.all([
+const [{ page, services }, settings] = await Promise.all([
   sanity.client.fetch(HOME_QUERY, { language: locale }),
   sanity.getSiteSettings(locale),
 ]);
@@ -239,27 +239,13 @@ const manifesto = page?.manifesto?.quote ? page.manifesto : null;
     )
   }
 
-  {/* ── Latest articles ───────────────────────────────────────────── */}
+  {/* ── Latest articles: server island, so new articles appear without a deploy.
+       In the Studio preview it renders inline, with drafts. ─────────────────── */}
   {
-    latestArticles.length > 0 && (
-      <section class="section section--alt" aria-labelledby="articles-title">
-        <Container>
-          <SectionHeading
-            id="articles-title"
-            label={strings.nav.articles}
-            title={page?.articlesTitle}
-            href={getRoutePath('articles', locale)}
-            linkLabel={strings.home.allArticles}
-          />
-          <ul role="list" class="card-grid">
-            {latestArticles.map((article) => (
-              <li>
-                <ArticleCard article={article} locale={locale} headingLevel="h3" />
-              </li>
-            ))}
-          </ul>
-        </Container>
-      </section>
+    sanity.preview ? (
+      <LatestArticles locale={locale} title={page?.articlesTitle} />
+    ) : (
+      <LatestArticles server:defer locale={locale} title={page?.articlesTitle} />
     )
   }
 

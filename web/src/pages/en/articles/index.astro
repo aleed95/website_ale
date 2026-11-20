@@ -1,5 +1,10 @@
 ---
-import ArticlesView from "@/views/ArticlesView.astro";
+/** Articles list, rendered on demand so new articles appear without a deploy. */
+import ArticlesView from '@/views/ArticlesView.astro';
+import { cacheOnCdn } from '@/lib/live';
+
+export const prerender = false;
+cacheOnCdn(Astro.response.headers);
 ---
 
 <ArticlesView locale="en" />

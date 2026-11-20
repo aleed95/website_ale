@@ -1,12 +1,17 @@
 ---
-import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+/** Article page, rendered on demand: new articles are online minutes after Publish. */
 import ArticleView from '@/views/ArticleView.astro';
-import { getArticlePaths } from '@/lib/paths';
+import NotFoundView from '@/views/NotFoundView.astro';
+import { cacheOnCdn } from '@/lib/live';
+import { useSanity } from '@/lib/sanity/fetch';
+import { ARTICLE_QUERY } from '@/lib/sanity/queries';
 
-export const getStaticPaths = (() => getArticlePaths('en')) satisfies GetStaticPaths;
+export const prerender = false;
 
-type Props = InferGetStaticPropsType<typeof getStaticPaths>;
-const { article } = Astro.props as Props;
+const slug = Astro.params.slug ?? '';
+const article = await useSanity(Astro.locals).client.fetch(ARTICLE_QUERY, { language: 'en', slug });
+if (article?.slug) cacheOnCdn(Astro.response.headers);
+else Astro.response.status = 404;
 ---
 
-<ArticleView locale="en" article={article} />
+{article?.slug ? <ArticleView locale="en" article={{ ...article, slug: article.slug }} /> : <NotFoundView />}

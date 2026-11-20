@@ -47,10 +47,13 @@ export function RequestPublishTool() {
         </Heading>
         <Stack gap={3}>
           <Text>
-            Quello che pubblichi nello Studio è salvato subito e lo vedi nella scheda <strong>Anteprima</strong>, ma
-            arriva sul sito pubblico solo quando lo sviluppatore lo aggiorna.
+            Gli <strong>articoli</strong> vanno online da soli: pochi minuti dopo «Publish» sono sul sito.
           </Text>
-          <Text>Quando hai finito le modifiche, mandagli una richiesta da qui.</Text>
+          <Text>
+            Tutto il resto (home, chi sono, servizi, progetti…) lo vedi subito nella scheda <strong>Anteprima</strong>, ma
+            arriva sul sito pubblico solo quando lo sviluppatore lo aggiorna. Quando hai finito, mandagli una richiesta da
+            qui.
+          </Text>
         </Stack>
 
         <Stack gap={3}>

@@ -186,9 +186,7 @@ export const HOME_QUERY = defineQuery(`{
     ${seoFields}
   },
   "services": *[_type == "service" && language == $language && defined(slug.current)]
-    | order(order asc, title asc){ ${serviceCardFields} },
-  "latestArticles": *[_type == "article" && language == $language && defined(slug.current)]
-    | order(publishedAt desc)[0...3]{ ${articleCardFields} }
+    | order(order asc, title asc){ ${serviceCardFields} }
 }`);
 
 // ─── About ───────────────────────────────────────────────────────────────────
@@ -253,17 +251,39 @@ export const ARTICLES_QUERY = defineQuery(`
   }
 `);
 
+const articlePageFields = /* groq */ `
+  ${articleCardFields},
+  body[]{ ${richTextFields} },
+  "author": author->{
+    name,
+    image { ${imageFields} },
+    "bio": select($language == "en" => bio.en, bio.it)
+  },
+  ${seoFields},
+  ${translationFields}
+`;
+
 export const ARTICLE_PAGES_QUERY = defineQuery(`
-  *[_type == "article" && language == $language && defined(slug.current)]{
-    ${articleCardFields},
-    body[]{ ${richTextFields} },
-    "author": author->{
-      name,
-      image { ${imageFields} },
-      "bio": select($language == "en" => bio.en, bio.it)
-    },
-    ${seoFields},
-    ${translationFields}
+  *[_type == "article" && language == $language && defined(slug.current)]{ ${articlePageFields} }
+`);
+
+/** One article, for the on-demand article page (new articles appear without a deploy). */
+export const ARTICLE_QUERY = defineQuery(`
+  *[_type == "article" && language == $language && slug.current == $slug][0]{ ${articlePageFields} }
+`);
+
+/** Latest articles for the home-page server island. */
+export const LATEST_ARTICLES_QUERY = defineQuery(`
+  *[_type == "article" && language == $language && defined(slug.current)]
+    | order(publishedAt desc)[0...3]{ ${articleCardFields} }
+`);
+
+/** Every published article URL, for the articles sitemap. */
+export const ARTICLE_URLS_QUERY = defineQuery(`
+  *[_type == "article" && defined(slug.current) && defined(language)] | order(publishedAt desc){
+    language,
+    "slug": slug.current,
+    "updatedAt": _updatedAt
   }
 `);
 

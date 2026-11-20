@@ -31,6 +31,10 @@ export default defineConfig({
         "base-uri 'self'",
         "object-src 'none'",
       ],
+      scriptDirective: {
+        // The tiny inline script in BaseLayout that adds the "js" class (progressive menu).
+        hashes: ['sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw='],
+      },
       styleDirective: {
         resources: [
           "'self'",

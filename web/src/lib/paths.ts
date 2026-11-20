@@ -4,7 +4,7 @@
  */
 import type { Locale } from '@/i18n/config';
 import { sanityClient } from './sanity/fetch';
-import { ARTICLE_PAGES_QUERY, PAGE_PAGES_QUERY, PROJECT_PAGES_QUERY } from './sanity/queries';
+import { PAGE_PAGES_QUERY, PROJECT_PAGES_QUERY } from './sanity/queries';
 import type {
   ARTICLE_PAGES_QUERY_RESULT,
   PAGE_PAGES_QUERY_RESULT,
@@ -24,10 +24,6 @@ export async function getProjectPaths(locale: Locale) {
   return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
 }
 
-export async function getArticlePaths(locale: Locale) {
-  const articles = withSlug(await sanityClient.fetch(ARTICLE_PAGES_QUERY, { language: locale }));
-  return articles.map((article) => ({ params: { slug: article.slug }, props: { article } }));
-}
 
 export async function getPagePaths(locale: Locale) {
   const pages = withSlug(await sanityClient.fetch(PAGE_PAGES_QUERY, { language: locale }));

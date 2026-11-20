@@ -888,7 +888,7 @@ export type SECTION_PAGES_QUERY_RESULT = {
 
 // Source: ../web/src/lib/sanity/queries.ts
 // Variable: HOME_QUERY
-// Query: {  "page": *[_type == "homePage" && _id == "homePage-" + $language][0]{    heroImage {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },    heroEyebrow,    heroTitle,    heroText,    introTitle,    introText,    pillarsTitle,    pillars[]{ _key, title, text },    bandImage {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },    numbers[]{ _key, value, label },    manifesto { quote, attribution },    servicesTitle,    projectsTitle,    articlesTitle,    publicationsTitle,    "featuredProjects": featuredProjects[]->{   _id,  title,  "slug": slug.current,  summary,  startDate,  endDate,  coverImage {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },  "category": category->{   _id,  "title": select($language == "en" => title.en, title.it),  "slug": slug.current } },    "featuredPublications": featuredPublications[]->{   _id,  title,  publicationType,  authors,  publishedAt,  publisher,  citationDetails,  doi,  url,  "description": select($language == "en" => description.en, description.it),  coverImage {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } } },    ctaTitle,    ctaText,    ctaLabel,      seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  }  },  "services": *[_type == "service" && language == $language && defined(slug.current)]    | order(order asc, title asc){   _id,  title,  "slug": slug.current,  summary,  image {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } } },  "latestArticles": *[_type == "article" && language == $language && defined(slug.current)]    | order(publishedAt desc)[0...3]{   _id,  title,  "slug": slug.current,  excerpt,  publishedAt,  coverImage {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },  "categories": categories[]->{   _id,  "title": select($language == "en" => title.en, title.it),  "slug": slug.current },  tags }}
+// Query: {  "page": *[_type == "homePage" && _id == "homePage-" + $language][0]{    heroImage {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },    heroEyebrow,    heroTitle,    heroText,    introTitle,    introText,    pillarsTitle,    pillars[]{ _key, title, text },    bandImage {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },    numbers[]{ _key, value, label },    manifesto { quote, attribution },    servicesTitle,    projectsTitle,    articlesTitle,    publicationsTitle,    "featuredProjects": featuredProjects[]->{   _id,  title,  "slug": slug.current,  summary,  startDate,  endDate,  coverImage {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },  "category": category->{   _id,  "title": select($language == "en" => title.en, title.it),  "slug": slug.current } },    "featuredPublications": featuredPublications[]->{   _id,  title,  publicationType,  authors,  publishedAt,  publisher,  citationDetails,  doi,  url,  "description": select($language == "en" => description.en, description.it),  coverImage {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } } },    ctaTitle,    ctaText,    ctaLabel,      seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  }  },  "services": *[_type == "service" && language == $language && defined(slug.current)]    | order(order asc, title asc){   _id,  title,  "slug": slug.current,  summary,  image {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } } }}
 export type HOME_QUERY_RESULT = {
   page: {
     heroImage: {
@@ -1063,37 +1063,6 @@ export type HOME_QUERY_RESULT = {
         } | null;
       } | null;
     } | null;
-  }>;
-  latestArticles: Array<{
-    _id: string;
-    title: string;
-    slug: string;
-    excerpt: string;
-    publishedAt: string;
-    coverImage: {
-      alt: string | null;
-      caption: string | null;
-      credit: string | null;
-      crop: SanityImageCrop | null;
-      hotspot: SanityImageHotspot | null;
-      asset: {
-        _id: string;
-        url: string;
-        metadata: {
-          lqip: string | null;
-          dimensions: {
-            width: number;
-            height: number;
-          } | null;
-        } | null;
-      } | null;
-    };
-    categories: Array<{
-      _id: string;
-      title: string | null;
-      slug: string;
-    }> | null;
-    tags: Array<string> | null;
   }>;
 };
 
@@ -1603,7 +1572,7 @@ export type ARTICLES_QUERY_RESULT = Array<{
 
 // Source: ../web/src/lib/sanity/queries.ts
 // Variable: ARTICLE_PAGES_QUERY
-// Query: *[_type == "article" && language == $language && defined(slug.current)]{      _id,  title,  "slug": slug.current,  excerpt,  publishedAt,  coverImage {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },  "categories": categories[]->{   _id,  "title": select($language == "en" => title.en, title.it),  "slug": slug.current },  tags,    body[]{   ...,  _type == "accessibleImage" => { _type, _key,   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },  _type == "video" => { _type, _key,   source,  url,  title,  caption,  "file": file.asset->{ url, mimeType },  poster {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } } } },    "author": author->{      name,      image {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },      "bio": select($language == "en" => bio.en, bio.it)    },      seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  },      "translations": *[_type == "translation.metadata" && references(^._id)][0].translations[]{    "language": value->language,    "slug": value->slug.current  }  }
+// Query: *[_type == "article" && language == $language && defined(slug.current)]{     _id,  title,  "slug": slug.current,  excerpt,  publishedAt,  coverImage {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },  "categories": categories[]->{   _id,  "title": select($language == "en" => title.en, title.it),  "slug": slug.current },  tags,  body[]{   ...,  _type == "accessibleImage" => { _type, _key,   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },  _type == "video" => { _type, _key,   source,  url,  title,  caption,  "file": file.asset->{ url, mimeType },  poster {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } } } },  "author": author->{    name,    image {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },    "bio": select($language == "en" => bio.en, bio.it)  },    seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  },    "translations": *[_type == "translation.metadata" && references(^._id)][0].translations[]{    "language": value->language,    "slug": value->slug.current  } }
 export type ARTICLE_PAGES_QUERY_RESULT = Array<{
   _id: string;
   title: string;
@@ -1748,6 +1717,199 @@ export type ARTICLE_PAGES_QUERY_RESULT = Array<{
     language: string | null;
     slug: string | null;
   }> | null;
+}>;
+
+// Source: ../web/src/lib/sanity/queries.ts
+// Variable: ARTICLE_QUERY
+// Query: *[_type == "article" && language == $language && slug.current == $slug][0]{     _id,  title,  "slug": slug.current,  excerpt,  publishedAt,  coverImage {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },  "categories": categories[]->{   _id,  "title": select($language == "en" => title.en, title.it),  "slug": slug.current },  tags,  body[]{   ...,  _type == "accessibleImage" => { _type, _key,   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },  _type == "video" => { _type, _key,   source,  url,  title,  caption,  "file": file.asset->{ url, mimeType },  poster {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } } } },  "author": author->{    name,    image {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },    "bio": select($language == "en" => bio.en, bio.it)  },    seo {    title,    description,    noIndex,    image { asset->{ _id, url, metadata { dimensions { width, height } } } }  },    "translations": *[_type == "translation.metadata" && references(^._id)][0].translations[]{    "language": value->language,    "slug": value->slug.current  } }
+export type ARTICLE_QUERY_RESULT = {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  publishedAt: string;
+  coverImage: {
+    alt: string | null;
+    caption: string | null;
+    credit: string | null;
+    crop: SanityImageCrop | null;
+    hotspot: SanityImageHotspot | null;
+    asset: {
+      _id: string;
+      url: string;
+      metadata: {
+        lqip: string | null;
+        dimensions: {
+          width: number;
+          height: number;
+        } | null;
+      } | null;
+    } | null;
+  };
+  categories: Array<{
+    _id: string;
+    title: string | null;
+    slug: string;
+  }> | null;
+  tags: Array<string> | null;
+  body: Array<
+    | {
+        _key: string;
+        _type: "accessibleImage";
+        asset: {
+          _id: string;
+          url: string;
+          metadata: {
+            lqip: string | null;
+            dimensions: {
+              width: number;
+              height: number;
+            } | null;
+          } | null;
+        } | null;
+        media?: unknown;
+        hotspot: SanityImageHotspot | null;
+        crop: SanityImageCrop | null;
+        alt: string | null;
+        caption: string | null;
+        credit: string | null;
+      }
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?: "blockquote" | "h2" | "h3" | "normal";
+        listItem?: "bullet" | "number";
+        markDefs?: Array<{
+          href: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+    | {
+        _key: string;
+        _type: "video";
+        source: "file" | "link";
+        url: string | null;
+        file: {
+          url: string;
+          mimeType: string;
+        } | null;
+        title: string;
+        poster: {
+          alt: string | null;
+          caption: string | null;
+          credit: string | null;
+          crop: SanityImageCrop | null;
+          hotspot: SanityImageHotspot | null;
+          asset: {
+            _id: string;
+            url: string;
+            metadata: {
+              lqip: string | null;
+              dimensions: {
+                width: number;
+                height: number;
+              } | null;
+            } | null;
+          } | null;
+        } | null;
+        caption: string | null;
+      }
+  >;
+  author: {
+    name: string;
+    image: {
+      alt: string | null;
+      caption: string | null;
+      credit: string | null;
+      crop: SanityImageCrop | null;
+      hotspot: SanityImageHotspot | null;
+      asset: {
+        _id: string;
+        url: string;
+        metadata: {
+          lqip: string | null;
+          dimensions: {
+            width: number;
+            height: number;
+          } | null;
+        } | null;
+      } | null;
+    } | null;
+    bio: string | null;
+  } | null;
+  seo: {
+    title: string | null;
+    description: string | null;
+    noIndex: boolean | null;
+    image: {
+      asset: {
+        _id: string;
+        url: string;
+        metadata: {
+          dimensions: {
+            width: number;
+            height: number;
+          } | null;
+        } | null;
+      } | null;
+    } | null;
+  } | null;
+  translations: Array<{
+    language: string | null;
+    slug: string | null;
+  }> | null;
+} | null;
+
+// Source: ../web/src/lib/sanity/queries.ts
+// Variable: LATEST_ARTICLES_QUERY
+// Query: *[_type == "article" && language == $language && defined(slug.current)]    | order(publishedAt desc)[0...3]{   _id,  title,  "slug": slug.current,  excerpt,  publishedAt,  coverImage {   alt,  caption,  credit,  crop,  hotspot,  asset->{ _id, url, metadata { lqip, dimensions { width, height } } } },  "categories": categories[]->{   _id,  "title": select($language == "en" => title.en, title.it),  "slug": slug.current },  tags }
+export type LATEST_ARTICLES_QUERY_RESULT = Array<{
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  publishedAt: string;
+  coverImage: {
+    alt: string | null;
+    caption: string | null;
+    credit: string | null;
+    crop: SanityImageCrop | null;
+    hotspot: SanityImageHotspot | null;
+    asset: {
+      _id: string;
+      url: string;
+      metadata: {
+        lqip: string | null;
+        dimensions: {
+          width: number;
+          height: number;
+        } | null;
+      } | null;
+    } | null;
+  };
+  categories: Array<{
+    _id: string;
+    title: string | null;
+    slug: string;
+  }> | null;
+  tags: Array<string> | null;
+}>;
+
+// Source: ../web/src/lib/sanity/queries.ts
+// Variable: ARTICLE_URLS_QUERY
+// Query: *[_type == "article" && defined(slug.current) && defined(language)] | order(publishedAt desc){    language,    "slug": slug.current,    "updatedAt": _updatedAt  }
+export type ARTICLE_URLS_QUERY_RESULT = Array<{
+  language: string;
+  slug: string;
+  updatedAt: string;
 }>;
 
 // Source: ../web/src/lib/sanity/queries.ts
@@ -1898,13 +2060,16 @@ declare global {
     '\n  *[_type == "siteSettings" && _id == "siteSettings"][0]{\n    siteName,\n    "tagline": select($language == "en" => tagline.en, tagline.it),\n    email,\n    phone,\n    "address": select($language == "en" => address.en, address.it),\n    vatNumber,\n    "privacyPageSlug": select(\n      privacyPage->language == $language => privacyPage->slug.current,\n      *[_type == "translation.metadata" && references(^.privacyPage._ref)][0]\n        .translations[language == $language][0].value->slug.current\n    ),\n    socialLinks[]{ _key, platform, label, url },\n    "defaultSeoDescription": select($language == "en" => defaultSeoDescription.en, defaultSeoDescription.it),\n    defaultShareImage { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n': SITE_SETTINGS_QUERY_RESULT;
     '\n  *[_type == "navigation" && _id == "navigation"][0]{\n    mainMenu[]{ \n  _key,\n  "label": select($language == "en" => label.en, label.it),\n  linkType,\n  internalPage,\n  url,\n  "pageSlug": select(\n    page->language == $language => page->slug.current,\n    *[_type == "translation.metadata" && references(^.page._ref)][0]\n      .translations[language == $language][0].value->slug.current\n  )\n },\n    "footerSummary": select($language == "en" => footerSummary.en, footerSummary.it),\n    "copyrightNote": select($language == "en" => copyrightNote.en, copyrightNote.it),\n    footerLinks[]{ \n  _key,\n  "label": select($language == "en" => label.en, label.it),\n  linkType,\n  internalPage,\n  url,\n  "pageSlug": select(\n    page->language == $language => page->slug.current,\n    *[_type == "translation.metadata" && references(^.page._ref)][0]\n      .translations[language == $language][0].value->slug.current\n  )\n }\n  }\n': NAVIGATION_QUERY_RESULT;
     '\n  *[_type == "sectionPages" && _id == "sectionPages-" + $language][0]{\n    services { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n },\n    projects { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n },\n    publications { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n },\n    articles { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n },\n    contact { title, intro, \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n },\n    contactForm { formTitle, thanksTitle, thanksText }\n  }\n': SECTION_PAGES_QUERY_RESULT;
-    '{\n  "page": *[_type == "homePage" && _id == "homePage-" + $language][0]{\n    heroImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n    heroEyebrow,\n    heroTitle,\n    heroText,\n    introTitle,\n    introText,\n    pillarsTitle,\n    pillars[]{ _key, title, text },\n    bandImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n    numbers[]{ _key, value, label },\n    manifesto { quote, attribution },\n    servicesTitle,\n    projectsTitle,\n    articlesTitle,\n    publicationsTitle,\n    "featuredProjects": featuredProjects[]->{ \n  _id,\n  title,\n  "slug": slug.current,\n  summary,\n  startDate,\n  endDate,\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  "category": category->{ \n  _id,\n  "title": select($language == "en" => title.en, title.it),\n  "slug": slug.current\n }\n },\n    "featuredPublications": featuredPublications[]->{ \n  _id,\n  title,\n  publicationType,\n  authors,\n  publishedAt,\n  publisher,\n  citationDetails,\n  doi,\n  url,\n  "description": select($language == "en" => description.en, description.it),\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n },\n    ctaTitle,\n    ctaText,\n    ctaLabel,\n    \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n\n  },\n  "services": *[_type == "service" && language == $language && defined(slug.current)]\n    | order(order asc, title asc){ \n  _id,\n  title,\n  "slug": slug.current,\n  summary,\n  image { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n },\n  "latestArticles": *[_type == "article" && language == $language && defined(slug.current)]\n    | order(publishedAt desc)[0...3]{ \n  _id,\n  title,\n  "slug": slug.current,\n  excerpt,\n  publishedAt,\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  "categories": categories[]->{ \n  _id,\n  "title": select($language == "en" => title.en, title.it),\n  "slug": slug.current\n },\n  tags\n }\n}': HOME_QUERY_RESULT;
+    '{\n  "page": *[_type == "homePage" && _id == "homePage-" + $language][0]{\n    heroImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n    heroEyebrow,\n    heroTitle,\n    heroText,\n    introTitle,\n    introText,\n    pillarsTitle,\n    pillars[]{ _key, title, text },\n    bandImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n    numbers[]{ _key, value, label },\n    manifesto { quote, attribution },\n    servicesTitle,\n    projectsTitle,\n    articlesTitle,\n    publicationsTitle,\n    "featuredProjects": featuredProjects[]->{ \n  _id,\n  title,\n  "slug": slug.current,\n  summary,\n  startDate,\n  endDate,\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  "category": category->{ \n  _id,\n  "title": select($language == "en" => title.en, title.it),\n  "slug": slug.current\n }\n },\n    "featuredPublications": featuredPublications[]->{ \n  _id,\n  title,\n  publicationType,\n  authors,\n  publishedAt,\n  publisher,\n  citationDetails,\n  doi,\n  url,\n  "description": select($language == "en" => description.en, description.it),\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n },\n    ctaTitle,\n    ctaText,\n    ctaLabel,\n    \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n\n  },\n  "services": *[_type == "service" && language == $language && defined(slug.current)]\n    | order(order asc, title asc){ \n  _id,\n  title,\n  "slug": slug.current,\n  summary,\n  image { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n }\n}': HOME_QUERY_RESULT;
     '\n  *[_type == "biography" && _id == "biography-" + $language][0]{\n    title,\n    introduction,\n    profileImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n    body[]{ \n  ...,\n  _type == "accessibleImage" => { _type, _key, \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  _type == "video" => { _type, _key, \n  source,\n  url,\n  title,\n  caption,\n  "file": file.asset->{ url, mimeType },\n  poster { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n }\n },\n    education[]{ _key, title, organization, location, startYear, endYear, description },\n    experience[]{ _key, title, organization, location, startYear, endYear, description },\n    skills[]{ _key, title, items },\n    qualifications[]{ _key, title, issuer, year, url },\n    \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n\n  }\n': BIOGRAPHY_QUERY_RESULT;
     '\n  *[_type == "service" && language == $language && defined(slug.current)] | order(order asc, title asc){\n    \n  _id,\n  title,\n  "slug": slug.current,\n  summary,\n  image { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n,\n    description[]{ \n  ...,\n  _type == "accessibleImage" => { _type, _key, \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  _type == "video" => { _type, _key, \n  source,\n  url,\n  title,\n  caption,\n  "file": file.asset->{ url, mimeType },\n  poster { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n }\n },\n    "relatedProjects": *[_type == "project" && language == $language && defined(slug.current) && references(^._id)]\n      | order(startDate desc){ _id, title, "slug": slug.current }\n  }\n': SERVICES_QUERY_RESULT;
     '\n  *[_type == "project" && language == $language && defined(slug.current)] | order(startDate desc){\n    \n  _id,\n  title,\n  "slug": slug.current,\n  summary,\n  startDate,\n  endDate,\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  "category": category->{ \n  _id,\n  "title": select($language == "en" => title.en, title.it),\n  "slug": slug.current\n }\n\n  }\n': PROJECTS_QUERY_RESULT;
     '\n  *[_type == "project" && language == $language && defined(slug.current)]{\n    \n  _id,\n  title,\n  "slug": slug.current,\n  summary,\n  startDate,\n  endDate,\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  "category": category->{ \n  _id,\n  "title": select($language == "en" => title.en, title.it),\n  "slug": slug.current\n }\n,\n    body[]{ \n  ...,\n  _type == "accessibleImage" => { _type, _key, \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  _type == "video" => { _type, _key, \n  source,\n  url,\n  title,\n  caption,\n  "file": file.asset->{ url, mimeType },\n  poster { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n }\n },\n    gallery[]{\n      _key,\n      _type,\n      _type == "accessibleImage" => { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n      _type == "video" => { \n  source,\n  url,\n  title,\n  caption,\n  "file": file.asset->{ url, mimeType },\n  poster { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n }\n    },\n    client,\n    location,\n    "relatedServices": relatedServices[]->{ _id, title, "slug": slug.current },\n    \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n,\n    \n  "translations": *[_type == "translation.metadata" && references(^._id)][0].translations[]{\n    "language": value->language,\n    "slug": value->slug.current\n  }\n\n  }\n': PROJECT_PAGES_QUERY_RESULT;
     '\n  *[_type == "article" && language == $language && defined(slug.current)] | order(publishedAt desc){\n    \n  _id,\n  title,\n  "slug": slug.current,\n  excerpt,\n  publishedAt,\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  "categories": categories[]->{ \n  _id,\n  "title": select($language == "en" => title.en, title.it),\n  "slug": slug.current\n },\n  tags\n\n  }\n': ARTICLES_QUERY_RESULT;
-    '\n  *[_type == "article" && language == $language && defined(slug.current)]{\n    \n  _id,\n  title,\n  "slug": slug.current,\n  excerpt,\n  publishedAt,\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  "categories": categories[]->{ \n  _id,\n  "title": select($language == "en" => title.en, title.it),\n  "slug": slug.current\n },\n  tags\n,\n    body[]{ \n  ...,\n  _type == "accessibleImage" => { _type, _key, \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  _type == "video" => { _type, _key, \n  source,\n  url,\n  title,\n  caption,\n  "file": file.asset->{ url, mimeType },\n  poster { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n }\n },\n    "author": author->{\n      name,\n      image { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n      "bio": select($language == "en" => bio.en, bio.it)\n    },\n    \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n,\n    \n  "translations": *[_type == "translation.metadata" && references(^._id)][0].translations[]{\n    "language": value->language,\n    "slug": value->slug.current\n  }\n\n  }\n': ARTICLE_PAGES_QUERY_RESULT;
+    '\n  *[_type == "article" && language == $language && defined(slug.current)]{ \n  \n  _id,\n  title,\n  "slug": slug.current,\n  excerpt,\n  publishedAt,\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  "categories": categories[]->{ \n  _id,\n  "title": select($language == "en" => title.en, title.it),\n  "slug": slug.current\n },\n  tags\n,\n  body[]{ \n  ...,\n  _type == "accessibleImage" => { _type, _key, \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  _type == "video" => { _type, _key, \n  source,\n  url,\n  title,\n  caption,\n  "file": file.asset->{ url, mimeType },\n  poster { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n }\n },\n  "author": author->{\n    name,\n    image { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n    "bio": select($language == "en" => bio.en, bio.it)\n  },\n  \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n,\n  \n  "translations": *[_type == "translation.metadata" && references(^._id)][0].translations[]{\n    "language": value->language,\n    "slug": value->slug.current\n  }\n\n }\n': ARTICLE_PAGES_QUERY_RESULT;
+    '\n  *[_type == "article" && language == $language && slug.current == $slug][0]{ \n  \n  _id,\n  title,\n  "slug": slug.current,\n  excerpt,\n  publishedAt,\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  "categories": categories[]->{ \n  _id,\n  "title": select($language == "en" => title.en, title.it),\n  "slug": slug.current\n },\n  tags\n,\n  body[]{ \n  ...,\n  _type == "accessibleImage" => { _type, _key, \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  _type == "video" => { _type, _key, \n  source,\n  url,\n  title,\n  caption,\n  "file": file.asset->{ url, mimeType },\n  poster { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n }\n },\n  "author": author->{\n    name,\n    image { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n    "bio": select($language == "en" => bio.en, bio.it)\n  },\n  \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n,\n  \n  "translations": *[_type == "translation.metadata" && references(^._id)][0].translations[]{\n    "language": value->language,\n    "slug": value->slug.current\n  }\n\n }\n': ARTICLE_QUERY_RESULT;
+    '\n  *[_type == "article" && language == $language && defined(slug.current)]\n    | order(publishedAt desc)[0...3]{ \n  _id,\n  title,\n  "slug": slug.current,\n  excerpt,\n  publishedAt,\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  "categories": categories[]->{ \n  _id,\n  "title": select($language == "en" => title.en, title.it),\n  "slug": slug.current\n },\n  tags\n }\n': LATEST_ARTICLES_QUERY_RESULT;
+    '\n  *[_type == "article" && defined(slug.current) && defined(language)] | order(publishedAt desc){\n    language,\n    "slug": slug.current,\n    "updatedAt": _updatedAt\n  }\n': ARTICLE_URLS_QUERY_RESULT;
     '\n  *[_type == "publication"] | order(publishedAt desc){ \n  _id,\n  title,\n  publicationType,\n  authors,\n  publishedAt,\n  publisher,\n  citationDetails,\n  doi,\n  url,\n  "description": select($language == "en" => description.en, description.it),\n  coverImage { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n }\n': PUBLICATIONS_QUERY_RESULT;
     '\n  *[_type == "page" && language == $language && defined(slug.current)]{\n    _id,\n    title,\n    "slug": slug.current,\n    body[]{ \n  ...,\n  _type == "accessibleImage" => { _type, _key, \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n },\n  _type == "video" => { _type, _key, \n  source,\n  url,\n  title,\n  caption,\n  "file": file.asset->{ url, mimeType },\n  poster { \n  alt,\n  caption,\n  credit,\n  crop,\n  hotspot,\n  asset->{ _id, url, metadata { lqip, dimensions { width, height } } }\n }\n }\n },\n    \n  seo {\n    title,\n    description,\n    noIndex,\n    image { asset->{ _id, url, metadata { dimensions { width, height } } } }\n  }\n,\n    \n  "translations": *[_type == "translation.metadata" && references(^._id)][0].translations[]{\n    "language": value->language,\n    "slug": value->slug.current\n  }\n\n  }\n': PAGE_PAGES_QUERY_RESULT;
   }

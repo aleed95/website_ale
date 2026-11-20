@@ -106,5 +106,8 @@ export const config: Config = {
     '/api/*',
     // Netlify form used by the Studio's "Aggiorna il sito" button.
     '/richiesta-aggiornamento/',
+    // Redirect to the Studio.
+    '/admin',
+    '/admin/*',
   ],
 };

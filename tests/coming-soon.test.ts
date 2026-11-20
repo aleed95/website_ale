@@ -108,5 +108,7 @@ test('assets and the page itself are excluded from the function', () => {
     '/anteprima/*',
     '/api/*',
     '/richiesta-aggiornamento/',
+    '/admin',
+    '/admin/*',
   ]);
 });

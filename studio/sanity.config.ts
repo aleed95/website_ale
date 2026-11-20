@@ -5,6 +5,7 @@ import {
 } from '@sanity/document-internationalization';
 import { visionTool } from '@sanity/vision';
 import { defineConfig, type DocumentActionComponent } from 'sanity';
+import { ComposeIcon } from '@sanity/icons/Compose';
 import { UploadIcon } from '@sanity/icons/Upload';
 import { presentationTool } from 'sanity/presentation';
 import { structureTool } from 'sanity/structure';
@@ -14,6 +15,7 @@ import { locations, mainDocuments, PREVIEW } from './presentation/resolve';
 import { languages, singletonTypes, translatedDocumentTypes } from './lib/languages';
 import { schemaTypes } from './schemaTypes';
 import { structure } from './structure';
+import { NewArticleTool } from './tools/NewArticleTool';
 import { RequestPublishTool } from './tools/RequestPublishTool';
 
 const translatedTypes: readonly string[] = translatedDocumentTypes;
@@ -50,6 +52,7 @@ export default defineConfig({
 
   // Extra top-bar tool: ask the developer to publish the changes on the live site.
   tools: (prev) => [
+    { name: 'nuovo-articolo', title: 'Nuovo articolo', icon: ComposeIcon, component: NewArticleTool },
     ...prev,
     { name: 'aggiorna-sito', title: 'Aggiorna il sito', icon: UploadIcon, component: RequestPublishTool },
   ],

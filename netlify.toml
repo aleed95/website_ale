@@ -19,6 +19,21 @@
   SANITY_DATASET = "production"
   SANITY_API_VERSION = "2026-11-01"
 
+# ── Redirects ────────────────────────────────────────────────────────────────
+
+# Easy-to-remember entry to the content editor (Sanity Studio).
+[[redirects]]
+  from = "/admin"
+  to = "https://alessandrodini.sanity.studio/"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/admin/*"
+  to = "https://alessandrodini.sanity.studio/"
+  status = 302
+  force = true
+
 # ── Headers ──────────────────────────────────────────────────────────────────
 
 [[headers]]

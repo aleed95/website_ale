@@ -5,9 +5,10 @@
  * preview and marks responses as private and not indexable.
  */
 import { defineMiddleware } from 'astro:middleware';
-import { createPreviewClient } from '@/lib/sanity/client';
+import { createPreviewClient, sanityClient } from '@/lib/sanity/client';
 import { createSanityContext } from '@/lib/sanity/fetch';
 import { isPreviewCookieValid, PREVIEW_COOKIE, PREVIEW_PREFIX, rewriteInternalLinks } from '@/lib/preview';
+import { cacheOnCdn } from '@/lib/live';
 
 /**
  * Who may frame the preview. frame-ancestors checks every ancestor: the hosted Studio can
@@ -15,8 +16,29 @@ import { isPreviewCookieValid, PREVIEW_COOKIE, PREVIEW_PREFIX, rewriteInternalLi
  */
 const STUDIO_ORIGINS = 'https://alessandrodini.sanity.studio https://www.sanity.io https://sanity.io http://localhost:3333';
 
+/** netlify.toml headers do not apply to function responses: same values, set here. */
+const PUBLIC_SECURITY_HEADERS: Record<string, string> = {
+  'Content-Security-Policy': "frame-ancestors 'none'",
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+};
+
 export const onRequest = defineMiddleware(async (context, next) => {
-  if (context.isPrerendered || !context.url.pathname.startsWith(`${PREVIEW_PREFIX}/`)) return next();
+  if (context.isPrerendered) return next();
+
+  // Public on-demand pages (articles, server islands): fresh data for every render.
+  if (!context.url.pathname.startsWith(`${PREVIEW_PREFIX}/`)) {
+    context.locals.sanity = createSanityContext(sanityClient, false);
+    const response = await next();
+    for (const [name, value] of Object.entries(PUBLIC_SECURITY_HEADERS)) response.headers.set(name, value);
+    // Server islands (home "latest articles"): headers set inside the island component
+    // are not forwarded, so the CDN cache is applied here.
+    if (context.url.pathname.startsWith('/_server-islands/') && response.ok) cacheOnCdn(response.headers);
+    return response;
+  }
 
   if (await isPreviewCookieValid(context.cookies.get(PREVIEW_COOKIE)?.value)) {
     context.locals.sanity = createSanityContext(createPreviewClient(), true);

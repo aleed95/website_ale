@@ -1,0 +1,49 @@
+---
+/**
+ * "Latest articles" block of the home page. Used as a server island (`server:defer`):
+ * the home page stays static, while this block is rendered on demand (CDN-cached for
+ * 5 minutes) so newly published articles appear without a deploy.
+ */
+import Container from '@/components/ui/Container.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import ArticleCard from './ArticleCard.astro';
+import { getRoutePath, type Locale } from '@/i18n/config';
+import { t } from '@/i18n/ui';
+import { cacheOnCdn } from '@/lib/live';
+import { useSanity } from '@/lib/sanity/fetch';
+import { LATEST_ARTICLES_QUERY } from '@/lib/sanity/queries';
+
+interface Props {
+  locale: Locale;
+  title?: string | null | undefined;
+}
+
+const { locale, title } = Astro.props;
+const sanity = useSanity(Astro.locals);
+const strings = t(locale);
+const articles = await sanity.client.fetch(LATEST_ARTICLES_QUERY, { language: locale });
+if (!sanity.preview) cacheOnCdn(Astro.response.headers);
+---
+
+{
+  articles.length > 0 && (
+    <section class="section section--alt" aria-labelledby="articles-title">
+      <Container>
+        <SectionHeading
+          id="articles-title"
+          label={strings.nav.articles}
+          title={title}
+          href={getRoutePath('articles', locale)}
+          linkLabel={strings.home.allArticles}
+        />
+        <ul role="list" class="card-grid">
+          {articles.map((article) => (
+            <li>
+              <ArticleCard article={article} locale={locale} headingLevel="h3" />
+            </li>
+          ))}
+        </ul>
+      </Container>
+    </section>
+  )
+}
